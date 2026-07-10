@@ -47,6 +47,69 @@ _icon_registry: dict[str, str] = {}  # {icon_name: renderer_name}
 logger = logging.getLogger("easy_icons")
 
 
+def _expand_aliases(mapping: dict[str, str]) -> dict[str, str]:
+    """Expand comma-separated alias keys into individual icon entries.
+
+    A single mapping entry may declare several aliases for one icon by
+    separating them with commas, e.g. ``{"plus,create,add": "bi bi-plus"}``.
+    Each alias is stripped of surrounding whitespace and mapped to the same
+    value. Keys without a comma are copied unchanged, so existing
+    configurations are completely unaffected.
+
+    Within a single comma group, a later alias overrides an earlier duplicate,
+    matching Python's normal dict-construction semantics.
+
+    Args:
+        mapping: Raw icon mapping whose keys may contain comma-separated aliases.
+
+    Returns:
+        A new mapping with every alias expanded to its own key.
+
+    Note:
+        Because the comma is the alias delimiter, a logical icon name cannot
+        itself contain a comma.
+    """
+    expanded: dict[str, str] = {}
+    for key, value in mapping.items():
+        if "," not in key:
+            expanded[key] = value
+            continue
+        for alias in key.split(","):
+            alias = alias.strip()
+            if alias:
+                expanded[alias] = value
+    return expanded
+
+
+def resolve_icons(renderer_config: dict[str, Any], renderer_name: str) -> dict[str, str]:
+    """Build the final icon mapping for a single renderer configuration.
+
+    Merges icon packs (last-wins) and then explicit ``icons`` on top, expanding
+    any comma-separated alias keys *per layer* so that precedence is applied at
+    the level of individual icon names rather than raw (possibly multi-alias)
+    keys. This is the single source of truth used by both :func:`get_renderer`
+    and :func:`build_icon_registry`.
+
+    Args:
+        renderer_config: The per-renderer configuration dict from ``EASY_ICONS``.
+        renderer_name: Name of the renderer (used for logging context).
+
+    Returns:
+        Mapping of fully-expanded logical icon names to renderer identifiers.
+    """
+    packs_list = renderer_config.get("packs", [])
+    merged_icons: dict[str, str] = {}
+
+    if packs_list:
+        merged_icons = load_and_merge_packs(packs_list, renderer_name)
+
+    # Explicit icons always override pack icons.
+    explicit_icons = renderer_config.get("icons", {}) or {}
+    merged_icons.update(_expand_aliases(explicit_icons))
+
+    return merged_icons
+
+
 def load_and_merge_packs(packs_list: list[str], renderer_name: str) -> dict[str, str]:
     """Load and merge icon packs from dotted paths.
 
@@ -89,8 +152,9 @@ def load_and_merge_packs(packs_list: list[str], renderer_name: str) -> dict[str,
                 )
                 continue
 
-            # Merge with last-wins precedence
-            merged_icons.update(pack_data)
+            # Merge with last-wins precedence, expanding any comma-separated
+            # alias keys before merging so precedence applies per icon name.
+            merged_icons.update(_expand_aliases(pack_data))
             logger.debug(f"Renderer '{renderer_name}': Loaded {len(pack_data)} icons from pack '{pack_path}'")
 
         except ImportError as e:
@@ -148,16 +212,8 @@ def get_renderer(name: str = "default") -> Any:
     # Extract configuration options
     renderer_kwargs = renderer_config.get("config", {}) or {}
 
-    # Load and merge packs (last-wins), then merge explicit icons on top
-    packs_list = renderer_config.get("packs", [])
-    merged_icons = {}
-
-    if packs_list:
-        merged_icons = load_and_merge_packs(packs_list, name)
-
-    # Explicit icons always override pack icons
-    explicit_icons = renderer_config.get("icons", {}) or {}
-    merged_icons.update(explicit_icons)
+    # Resolve packs + explicit icons (with alias expansion) into one mapping.
+    merged_icons = resolve_icons(renderer_config, name)
 
     # Create instance
     try:
@@ -217,15 +273,8 @@ def build_icon_registry() -> None:
         if not isinstance(renderer_config, dict):
             continue
 
-        # Load and merge packs, then merge explicit icons
-        packs_list = renderer_config.get("packs", [])
-        merged_icons = {}
-
-        if packs_list:
-            merged_icons = load_and_merge_packs(packs_list, renderer_name)
-
-        explicit_icons = renderer_config.get("icons", {}) or {}
-        merged_icons.update(explicit_icons)
+        # Resolve packs + explicit icons (with alias expansion) into one mapping.
+        merged_icons = resolve_icons(renderer_config, renderer_name)
 
         for icon_name in merged_icons:
             if icon_name in _icon_registry:
