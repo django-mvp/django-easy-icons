@@ -187,6 +187,58 @@ Use in templates:
 {% icon "logo" renderer="sprites" %}
 ```
 
+### Icon Packs
+
+An **icon pack** is a module-level `dict` mapping logical icon names to renderer
+identifiers. Packs let a third-party package (or your own shared module) ship a
+set of icon definitions that consumers pull in by dotted path via the `packs`
+key — no copy/pasting a large `icons` block into every project.
+
+Define a pack anywhere importable:
+
+```python
+# mypackage/icons.py
+BOOTSTRAP = {
+    "home": "bi bi-house",
+    "user": "bi bi-person",
+    "settings": "bi bi-gear",
+}
+```
+
+Reference it from `EASY_ICONS`:
+
+```python
+EASY_ICONS = {
+    "default": {
+        "renderer": "easy_icons.renderers.ProviderRenderer",
+        "config": {"tag": "i"},
+        "packs": [
+            "mypackage.icons.BOOTSTRAP",   # dotted path to the dict
+        ],
+        "icons": {
+            "home": "bi bi-house-fill",     # override a pack entry
+            "star": "bi bi-star",           # add a project-specific icon
+        },
+    }
+}
+```
+
+**Merge precedence** (lowest to highest):
+
+1. Packs are merged in list order — **later packs override earlier ones** for
+   any shared name.
+2. The renderer's explicit `icons` are merged last, so they **override packs**.
+
+This precedence is applied per individual icon name, so overriding one entry
+never drops the rest of a pack.
+
+A pack that can't be imported, or that doesn't resolve to a `dict`, is **logged
+as a warning and skipped** — a broken or optional pack never breaks startup.
+
+> Aliases work inside packs too: a pack key may be a comma-separated list of
+> names (e.g. `"plus,create,add": "bi bi-plus"`), expanded the same way as in
+> the `icons` mapping.
+
 ### Default Attributes
 
 Configure default attributes that will be applied to all icons from a renderer:
