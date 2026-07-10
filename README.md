@@ -187,6 +187,41 @@ Use in templates:
 {% icon "logo" renderer="sprites" %}
 ```
 
+### Icon Aliases
+
+A single icon is often referred to by several names ("plus", "create", "add",
+"new", ...). Instead of repeating the value once per name, declare the aliases
+as a comma-separated key — it is expanded into individual entries at load time:
+
+```python
+EASY_ICONS = {
+    "default": {
+        "renderer": "easy_icons.renderers.ProviderRenderer",
+        "config": {"tag": "i"},
+        "icons": {
+            "plus,create,add,new": "bi bi-plus",  # one icon, four names
+            "trash,delete,remove": "bi bi-trash",
+        },
+    }
+}
+```
+
+All of the following now resolve to the same icon:
+
+```html
+{% icon "plus" %}
+{% icon "create" %}
+{% icon "add" %}
+```
+
+Notes:
+
+- Whitespace around each alias is ignored, so `"plus, create, add"` works too.
+- Aliases work in both the `icons` mapping and in icon packs; explicit `icons`
+  still override pack values on a per-name basis.
+- Because the comma is the delimiter, a logical icon name cannot itself contain
+  a comma.
+
 ### Default Attributes
 
 Configure default attributes that will be applied to all icons from a renderer:
