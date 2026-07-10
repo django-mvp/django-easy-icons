@@ -187,40 +187,57 @@ Use in templates:
 {% icon "logo" renderer="sprites" %}
 ```
 
-### Icon Aliases
+### Icon Packs
 
-A single icon is often referred to by several names ("plus", "create", "add",
-"new", ...). Instead of repeating the value once per name, declare the aliases
-as a comma-separated key — it is expanded into individual entries at load time:
+An **icon pack** is a module-level `dict` mapping logical icon names to renderer
+identifiers. Packs let a third-party package (or your own shared module) ship a
+set of icon definitions that consumers pull in by dotted path via the `packs`
+key — no copy/pasting a large `icons` block into every project.
+
+Define a pack anywhere importable:
+
+```python
+# mypackage/icons.py
+BOOTSTRAP = {
+    "home": "bi bi-house",
+    "user": "bi bi-person",
+    "settings": "bi bi-gear",
+}
+```
+
+Reference it from `EASY_ICONS`:
 
 ```python
 EASY_ICONS = {
     "default": {
         "renderer": "easy_icons.renderers.ProviderRenderer",
         "config": {"tag": "i"},
+        "packs": [
+            "mypackage.icons.BOOTSTRAP",   # dotted path to the dict
+        ],
         "icons": {
-            "plus,create,add,new": "bi bi-plus",  # one icon, four names
-            "trash,delete,remove": "bi bi-trash",
+            "home": "bi bi-house-fill",     # override a pack entry
+            "star": "bi bi-star",           # add a project-specific icon
         },
     }
 }
 ```
 
-All of the following now resolve to the same icon:
+**Merge precedence** (lowest to highest):
 
-```html
-{% icon "plus" %}
-{% icon "create" %}
-{% icon "add" %}
-```
+1. Packs are merged in list order — **later packs override earlier ones** for
+   any shared name.
+2. The renderer's explicit `icons` are merged last, so they **override packs**.
 
-Notes:
+This precedence is applied per individual icon name, so overriding one entry
+never drops the rest of a pack.
 
-- Whitespace around each alias is ignored, so `"plus, create, add"` works too.
-- Aliases work in both the `icons` mapping and in icon packs; explicit `icons`
-  still override pack values on a per-name basis.
-- Because the comma is the delimiter, a logical icon name cannot itself contain
-  a comma.
+A pack that can't be imported, or that doesn't resolve to a `dict`, is **logged
+as a warning and skipped** — a broken or optional pack never breaks startup.
+
+> Aliases work inside packs too: a pack key may be a comma-separated list of
+> names (e.g. `"plus,create,add": "bi bi-plus"`), expanded the same way as in
+> the `icons` mapping.
 
 ### Default Attributes
 
