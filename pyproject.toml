@@ -9,7 +9,7 @@ packages = [{include = "easy_icons", from = "src"}]
 homepage = "https://github.com/SamuelJennings/django-easy-icons"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 django = "*"
 
 

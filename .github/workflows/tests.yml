@@ -10,14 +10,10 @@ on:
       - 'pyproject.toml'
       - 'poetry.lock'
       - '.github/workflows/tests.yml'
+  # No paths filter on pull_request: these checks are ruleset-required, and a
+  # path-filtered required check never reports on out-of-scope PRs, blocking merge.
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - 'src/**'
-      - 'tests/**'
-      - 'pyproject.toml'
-      - 'poetry.lock'
-      - '.github/workflows/tests.yml'
   workflow_dispatch:
 
 jobs:
@@ -66,3 +62,18 @@ jobs:
           name: codecov-umbrella
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  # Stable required-check anchor: rulesets require this single check instead of
+  # the per-matrix-cell names, which change whenever the version matrix changes.
+  checks-complete:
+    name: checks-complete
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: always()
+    steps:
+      - name: Fail if any matrix job failed
+        run: |
+          if [ "${{ needs.test.result }}" != "success" ]; then
+            echo "test matrix result: ${{ needs.test.result }}"
+            exit 1
+          fi
