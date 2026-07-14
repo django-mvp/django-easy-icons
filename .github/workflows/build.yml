@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'src/**'
+      - 'easy_icons/**'
       - 'pyproject.toml'
       - 'poetry.lock'
       - '.pre-commit-config.yaml'

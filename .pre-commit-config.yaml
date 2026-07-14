@@ -41,7 +41,7 @@ repos:
         entry: poetry run mypy
         language: system
         types: [python]
-        files: ^src/easy_icons/
+        files: ^easy_icons/
   - repo: local
     hooks:
       - id: deptry

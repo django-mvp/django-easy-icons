@@ -5,7 +5,7 @@ description = "Easy, flexible icons for Django"
 authors = ["Sam <samuel.scott.jennings@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "easy_icons", from = "src"}]
+packages = [{include = "easy_icons"}]
 homepage = "https://github.com/SamuelJennings/django-easy-icons"
 
 [tool.poetry.dependencies]
@@ -74,7 +74,7 @@ preview = true
 profile = "black"
 
 [tool.mypy]
-files = ["src/easy_icons"]
+files = ["easy_icons"]
 disallow_untyped_defs = "False"
 disallow_any_unimported = "False"
 ignore_missing_imports = "True"
@@ -84,7 +84,7 @@ warn_return_any = "True"
 warn_unused_ignores = "True"
 show_error_codes = "True"
 exclude = ["docs/","migrations/","tests/settings.py"]
-mypy_path = "src/"
+mypy_path = "easy_icons/"
 plugins = ["mypy_django_plugin.main"]
 
 [tool.django-stubs]

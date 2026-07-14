@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'docs/**'
-      - 'src/easy_icons/**'
+      - 'easy_icons/**'
       - 'README.md'
   workflow_dispatch:
 
