@@ -14,7 +14,7 @@ django = "*"
 
 
 [tool.poetry.group.dev.dependencies]
-fairdm-dev-tools = {git = "https://github.com/FAIR-DM/dev-tools"}
+fairdm-dev-tools = {git = "https://github.com/FAIR-DM/dev-tools", extras = ["dev", "test"]}
 
 [tool.poetry.group.docs.dependencies]
 fairdm-docs = {git = "https://github.com/FAIR-DM/fairdm-docs", extras = ["sphinx_book_theme"]}
