@@ -1,26 +1,21 @@
 [tool.poetry]
-name = "django-easy-icons"
-version = "0.7.1"
-description = "Easy, flexible icons for Django"
-authors = ["Sam <samuel.scott.jennings@gmail.com>"]
-license = "MIT"
-readme = "README.md"
-packages = [{include = "easy_icons"}]
-homepage = "https://github.com/SamuelJennings/django-easy-icons"
-
-[tool.poetry.dependencies]
-python = "^3.11"
-django = "*"
-
+version = "0.5.0"
+packages = [{ include = "easy_icons" }]
+requires-poetry = '>=2.0,<3.0'
 
 [tool.poetry.group.dev.dependencies]
-fairdm-dev-tools = {git = "https://github.com/FAIR-DM/dev-tools", extras = ["dev", "test"]}
+fairdm-dev-tools = { git = "https://github.com/FAIR-DM/dev-tools", extras = [
+    "dev",
+    "test",
+] }
 
 [tool.poetry.group.docs.dependencies]
-fairdm-docs = {git = "https://github.com/FAIR-DM/fairdm-docs", extras = ["sphinx_book_theme"]}
+fairdm-docs = { git = "https://github.com/FAIR-DM/fairdm-docs", extras = [
+    "sphinx_book_theme",
+] }
 
 [build-system]
-requires = ["poetry-core"]
+requires = ['poetry-core (>=2.0,<3.0)']
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
@@ -40,7 +35,7 @@ addopts = [
 filterwarnings = [
     "ignore",
     "ignore::DeprecationWarning",
-    "ignore::PendingDeprecationWarning"
+    "ignore::PendingDeprecationWarning",
 ]
 
 [tool.coverage.report]
@@ -83,7 +78,7 @@ check_untyped_defs = "False"
 warn_return_any = "True"
 warn_unused_ignores = "True"
 show_error_codes = "True"
-exclude = ["docs/","migrations/","tests/settings.py"]
+exclude = ["docs/", "migrations/", "tests/settings.py"]
 mypy_path = "easy_icons/"
 plugins = ["mypy_django_plugin.main"]
 
@@ -92,12 +87,20 @@ django_settings_module = "tests.settings"
 ignore_missing_model_attributes = "True"
 
 [tool.deptry]
-extend_exclude = [
-    "tasks.py",
-    "tests/",
-    "example/",
-    "docs/"
-]
+extend_exclude = ["tasks.py", "tests/", "example/", "docs/"]
 
 [tool.deptry.per_rule_ignores]
 DEP003 = ["easy_icons"]
+
+[project]
+name = "django-easy-icons"
+description = "Easy, flexible icons for Django"
+license = "MIT"
+dynamic = ["version"]
+readme = "README.md"
+authors = [{ name = "Sam", email = "samuel.scott.jennings@gmail.com" }]
+requires-python = '>=3.11,<4.0'
+dependencies = ['django']
+
+[project.urls]
+homepage = "https://github.com/SamuelJennings/django-easy-icons"
