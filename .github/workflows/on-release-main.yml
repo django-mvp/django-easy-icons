@@ -1,162 +1,46 @@
+# Triggered after the Build workflow completes successfully on main.
+# Checks if the triggering commit has a version tag (e.g. v1.2.3).
+# If so, publishes to PyPI and creates a GitHub Release.
+#
+# To release:       invoke release --rule=patch   (bumps, tags, pushes main + tag)
 name: Release
 
 on:
-  push:
-    tags:
-      - "v*"
-  release:
-    types: [published]
+  workflow_run:
+    workflows: ["Build"]
+    types: [completed]
+
+permissions:
+  id-token: write
+  contents: write
 
 jobs:
-  release-checks:
-    name: Pre-release checks
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out
-        uses: actions/checkout@v6
-
-      - name: Set up Poetry env
-        uses: SamuelJennings/cached-poetry-action@v1
-
-      - name: Run tests
-        run: poetry run pytest
-
-      - name: Build package
-        run: poetry build
-
-      - name: Check package
-        run: poetry check
+  call-release:
+    uses: django-mvp/shared/.github/workflows/release.yml@main
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    secrets: inherit
 
   publish-pypi:
     name: Publish to PyPI
     runs-on: ubuntu-latest
-    needs: release-checks
+    needs: call-release
+    if: ${{ needs.call-release.outputs.tag != '' }}
     permissions:
-      # IMPORTANT: this permission is mandatory for trusted publishing
       id-token: write
       contents: read
     steps:
       - name: Check out
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Set up Poetry env
-        uses: SamuelJennings/cached-poetry-action@v1
-
-      - name: Export tag
-        id: vars
-        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+        uses: django-mvp/shared/.github/actions/setup-poetry@main
+        with:
+          python-version: '3.13'
 
       - name: Build package
-        run: |
-          poetry version ${{ steps.vars.outputs.tag }}
-          poetry build
+        run: poetry build
 
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-
-  create-release:
-    name: Create GitHub Release
-    runs-on: ubuntu-latest
-    needs: publish-pypi
-    permissions:
-      contents: write
-    steps:
-      - name: Check out
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Build Changelog
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          mode: "COMMIT"
-          configurationJson: |
-            {
-              "template": "#{{CHANGELOG}}",
-              "categories": [
-                {
-                    "title": "## 🚀 Features",
-                    "labels": ["feat", "feature"]
-                },
-                {
-                    "title": "## 🐛 Fixes",
-                    "labels": ["fix", "bug"]
-                },
-                {
-                    "title": "## 🧪 Tests",
-                    "labels": ["test"]
-                },
-                {
-                    "title": "## 🔧 Chores",
-                    "labels": ["chore", "build", "ci", "docs"]
-                },
-                {
-                    "title": "## Other",
-                    "labels": []
-                }
-              ],
-              "label_extractor": [
-                {
-                  "pattern": "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\\([\\w\\-\\.]+\\))?(!)?: ([\\w ])+([\\s\\S]*)",
-                  "on_property": "title",
-                  "target": "$1"
-                }
-              ]
-            }
-
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: ${{ steps.github_release.outputs.changelog }}
-          draft: false
-          prerelease: false
-
-  # docker:
-  #   needs: publish
-  #   name: Build container
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: "☁️ checkout repository"
-  #       uses: actions/checkout@v2
-
-  #     - name: "🔧 setup buildx"
-  #       uses: docker/setup-buildx-action@v1
-
-  #     - name: "🔧 cache docker layers"
-  #       uses: actions/cache@v2
-  #       with:
-  #         path: /tmp/.buildx-cache
-  #         key: ${{ runner.os }}-buildx-${{ github.sha }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-buildx-
-
-  #     - name: "🔧 docker meta"
-  #       id: meta
-  #       uses: docker/metadata-action@v3
-  #       with:
-  #         images: ${{ github.repository }}
-  #         tags: latest
-
-  #     - name: "📦 docker build"
-  #       uses: docker/build-push-action@v2
-  #       with:
-  #         context: .
-  #         tags: ${{ steps.meta.outputs.tags }}
-  #         labels: ${{ steps.meta.outputs.labels }}
-  #         outputs: type=docker,dest=/tmp/docker.tar
-  #         push: false
-  #         cache-from: type=gha, scope=${{ github.workflow }}
-  #         cache-to: type=gha, scope=${{ github.workflow }}
-
-  #     - name: "📂 docker artifacts"
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         name: docker
-  #         path: /tmp/docker.tar

@@ -5,28 +5,17 @@ on:
     types: [published]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   update-changelog:
-    name: Update CHANGELOG.md
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    timeout-minutes: 10
     steps:
-      - name: Check out
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Update Changelog
-        uses: stefanzweifel/changelog-updater-action@v1
+        uses: django-mvp/shared/.github/actions/update-changelog@main
         with:
           latest-version: ${{ github.event.release.tag_name }}
           release-notes: ${{ github.event.release.body }}
-
-      - name: Commit updated CHANGELOG
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          branch: main
-          commit_message: 'docs: update CHANGELOG.md for ${{ github.event.release.tag_name }} [skip ci]'
-          file_pattern: CHANGELOG.md
+          github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'src/**'
+      - 'easy_icons/**'
       - 'tests/**'
       - 'pyproject.toml'
       - 'poetry.lock'
@@ -17,63 +17,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    name: Test Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }}
-    strategy:
-      matrix:
-        python-version: ['3.11', '3.12']
-        django-version: ['4.2', '5.2']
-      fail-fast: false
-
-    steps:
-      - name: Check out
-        uses: actions/checkout@v6
-
-      - name: Set up Poetry env
-        uses: SamuelJennings/cached-poetry-action@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libpq-dev
-
-      - name: Install dependencies
-        run: |
-          poetry install
-          poetry add django==${{ matrix.django-version }}
-
-      - name: Run tests
-        run: |
-          if [ "${{ matrix.python-version }}" = "3.12" ] && [ "${{ matrix.django-version }}" = "5.2" ]; then
-            poetry run pytest --cov=easy_icons --cov-report=xml
-          else
-            poetry run pytest
-          fi
-
-      - name: Upload coverage to Codecov
-        if: matrix.python-version == '3.12' && matrix.django-version == '5.2'
-        uses: codecov/codecov-action@v5
-        with:
-          files: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  # Stable required-check anchor: rulesets require this single check instead of
-  # the per-matrix-cell names, which change whenever the version matrix changes.
-  checks-complete:
-    name: checks-complete
-    runs-on: ubuntu-latest
-    needs: [test]
-    if: always()
-    steps:
-      - name: Fail if any matrix job failed
-        run: |
-          if [ "${{ needs.test.result }}" != "success" ]; then
-            echo "test matrix result: ${{ needs.test.result }}"
-            exit 1
-          fi
+  call-tests:
+    uses: django-mvp/shared/.github/workflows/tests.yml@main
+    with:
+      coverage-package: easy_icons
+      django-versions: '["5.2", "6.0"]'
+      # easy_icons keeps its test/lint tooling in a single (non-optional) dev
+      # group rather than a separate `test` group, so the default `--with test`
+      # would fail. Empty args install main + dev + docs, which covers pytest.
+      poetry-install-args: ''
+    secrets: inherit
