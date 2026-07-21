@@ -43,7 +43,7 @@ it renders on the package index.
 
 ### Article VII — Dependency discipline
 A new runtime dependency requires a stated justification (Simplicity applied to the dependency
-tree; prefer the shared `fairdm-dev-tools` toolchain over ad-hoc dev deps). `deptry` must
+tree; prefer the shared `mvp-shared` toolchain bundle over ad-hoc dev deps). `deptry` must
 pass: no unused, missing, or transitively-relied-upon dependencies.
 
 ## Project articles
