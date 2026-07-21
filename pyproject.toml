@@ -1,8 +1,7 @@
 [tool.poetry]
-# Synced to the latest release tag (v1.1.1) 2026-07-21: the old release flow
-# derived the publish version from the tag, so this field had drifted (0.6.0).
-# Under the family release flow this field is the source of truth.
-version = "1.1.1"
+# Source of truth for the release flow: tag-release cuts v<version> when no
+# matching tag exists on a main push touching this file.
+version = "0.6.0"
 packages = [{ include = "easy_icons" }]
 requires-poetry = '>=2.0,<3.0'
 
