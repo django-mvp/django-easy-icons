@@ -40,6 +40,11 @@ repos:
         name: mypy
         entry: poetry run mypy
         language: system
+        # Without require_serial, pre-commit splits the file list into parallel
+        # batches, and concurrent mypy processes race on the shared .mypy_cache —
+        # INTERNAL ERROR on a cold cache (reproducible: rm -rf .mypy_cache, run
+        # --all-files). One serial invocation is also what mirrors-mypy ships.
+        require_serial: true
         types: [python]
         files: ^easy_icons/
   - repo: local
