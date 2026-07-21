@@ -48,17 +48,17 @@ class TestBaseRenderer:
         """Test icon name resolution with icon mapping."""
         icons = {"home": "house-icon", "user": "user-profile"}
         renderer = ConcreteRenderer(icons=icons)
-        
+
         assert renderer.get_icon("home") == "house-icon"
         assert renderer.get_icon("user") == "user-profile"
 
     def test_get_icon_not_found(self):
         """Test icon name resolution raises error for missing icons."""
         renderer = ConcreteRenderer(icons={"home": "house"})
-        
+
         with pytest.raises(IconNotFoundError) as exc_info:
             renderer.get_icon("missing")
-        
+
         assert "Icon 'missing' not listed in available icons" in str(exc_info.value)
         assert "ConcreteRenderer" in str(exc_info.value)
 
@@ -74,7 +74,7 @@ class TestBaseRenderer:
         """Test build_attrs merging with default attributes."""
         default_attrs = {"class": "icon", "height": "1em"}
         renderer = ConcreteRenderer(default_attrs=default_attrs)
-        
+
         attrs = renderer.build_attrs(width="2em")
         assert 'class="icon"' in attrs
         assert 'height="1em"' in attrs
@@ -84,7 +84,7 @@ class TestBaseRenderer:
         """Test build_attrs merging attributes that override defaults."""
         default_attrs = {"class": "icon", "height": "1em"}
         renderer = ConcreteRenderer(default_attrs=default_attrs)
-        
+
         # When we pass class, it should override default class
         test_attrs = {"class": "custom", "height": "2em"}
         attrs = renderer.build_attrs(use_defaults=True, **test_attrs)
@@ -96,7 +96,7 @@ class TestBaseRenderer:
         """Test build_attrs ignoring defaults when use_defaults=False."""
         default_attrs = {"class": "icon", "height": "1em"}
         renderer = ConcreteRenderer(default_attrs=default_attrs)
-        
+
         test_attrs = {"class": "custom"}
         attrs = renderer.build_attrs(use_defaults=False, **test_attrs)
         assert 'class="custom"' in attrs
@@ -106,7 +106,7 @@ class TestBaseRenderer:
         """Test that renderer instances are callable."""
         icons = {"home": "house"}
         renderer = ConcreteRenderer(icons=icons)
-        
+
         test_attrs = {"class": "test"}
         result = renderer("home", **test_attrs)
         assert isinstance(result, SafeString)
@@ -124,17 +124,17 @@ class TestBaseRenderer:
         """Test that BaseRenderer cannot be instantiated directly."""
         # BaseRenderer is abstract, so we test that our concrete implementation works
         renderer = ConcreteRenderer()
-        assert hasattr(renderer, 'render')
+        assert hasattr(renderer, "render")
         assert callable(renderer.render)
 
     def test_default_attrs_copy(self):
         """Test that default_attrs are copied to prevent mutations."""
         default_attrs = {"class": "icon"}
         renderer = ConcreteRenderer(default_attrs=default_attrs)
-        
+
         # Modify the renderer's default_attrs
         renderer.default_attrs["class"] = "modified"
-        
+
         # Original dict should be unchanged
         assert default_attrs["class"] == "icon"
 
@@ -142,7 +142,7 @@ class TestBaseRenderer:
         """Test build_attrs with empty kwargs."""
         default_attrs = {"class": "icon", "height": "1em"}
         renderer = ConcreteRenderer(default_attrs=default_attrs)
-        
+
         attrs = renderer.build_attrs()
         assert 'class="icon"' in attrs
         assert 'height="1em"' in attrs
