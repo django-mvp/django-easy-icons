@@ -120,9 +120,7 @@ class TestIconRegistry:
             utils.build_icon_registry()
 
             # Check that warning was logged
-            assert any(
-                "Icon name collision" in record.message for record in caplog.records
-            )
+            assert any("Icon name collision" in record.message for record in caplog.records)
             assert any("'star'" in record.message for record in caplog.records)
 
 
@@ -144,9 +142,7 @@ class TestIconAutoDetection:
             },
         }
 
-        with override_settings(
-            EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False
-        ):
+        with override_settings(EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False):
             utils.build_icon_registry()
             result = utils.icon("home")
 
@@ -168,9 +164,7 @@ class TestIconAutoDetection:
             },
         }
 
-        with override_settings(
-            EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False
-        ):
+        with override_settings(EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False):
             utils.build_icon_registry()
             result = utils.icon("logo")  # Only in sprites
 
@@ -192,9 +186,7 @@ class TestIconAutoDetection:
             },
         }
 
-        with override_settings(
-            EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False
-        ):
+        with override_settings(EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False):
             utils.build_icon_registry()
 
             # Auto-detect uses default
@@ -240,9 +232,7 @@ class TestIconFailSilently:
             },
         }
 
-        with override_settings(
-            EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False
-        ):
+        with override_settings(EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False):
             utils.build_icon_registry()
 
             with pytest.raises(IconNotFoundError) as exc_info:
@@ -304,9 +294,7 @@ class TestIconFailSilently:
             },
         }
 
-        with override_settings(
-            EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False
-        ):
+        with override_settings(EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False):
             utils.build_icon_registry()
 
             with pytest.raises(IconNotFoundError) as exc_info:
@@ -341,9 +329,7 @@ class TestIconRegistryWithNoDefault:
             },
         }
 
-        with override_settings(
-            EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False
-        ):
+        with override_settings(EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False):
             utils.build_icon_registry()
 
             # Both should auto-detect based on insertion order
@@ -368,9 +354,7 @@ class TestIconRegistryWithNoDefault:
             },
         }
 
-        with override_settings(
-            EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False
-        ):
+        with override_settings(EASY_ICONS=config, DEBUG=False, EASY_ICONS_FAIL_SILENTLY=False):
             utils.build_icon_registry()
 
             result = utils.icon("icon")

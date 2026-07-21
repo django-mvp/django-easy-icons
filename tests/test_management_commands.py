@@ -95,7 +95,7 @@ class TestShowIconRegistryCommand:
         assert "Icon Name Collisions" in output
         assert "star" in output
         # home should not appear since it has no collision
-        assert "home" not in output or "home" in output and "Collision" in output
+        assert "home" not in output or ("home" in output and "Collision" in output)
 
     def test_command_show_collisions_only_json(self, settings):
         """Test --show-collisions-only with JSON format."""

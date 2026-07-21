@@ -3,7 +3,7 @@
 # hooks inside the Poetry env, versioned by the mvp-shared[dev] bundle.
 # ruff format replaces black; ruff's UP rules replace pyupgrade.
 
-exclude: "^docs/|/migrations/|^tests/"
+exclude: "^docs/|/migrations/"
 default_stages: [pre-commit]
 
 repos:

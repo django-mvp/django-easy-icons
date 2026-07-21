@@ -55,7 +55,7 @@ EASY_ICONS = {
         "config": {
             "svg_dir": "icons",
             "default_attrs": {
-                "height": "1em", 
+                "height": "1em",
                 "fill": "currentColor",
             },
         },
@@ -71,7 +71,6 @@ EASY_ICONS = {
             "alt_dir": "../alt_dir/alt_dir.svg",  # Custom path example
         },
     },
-    
     # Font Awesome provider renderer
     "fontawesome": {
         "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -85,13 +84,12 @@ EASY_ICONS = {
         ],
         "icons": {
             "heart": "fa-heart",
-            "star": "fa-star", 
+            "star": "fa-star",
             "admin": "fa-toolbox",
             "user": "fa-user",
             "cog": "fa-cog",
         },
     },
-    
     # SVG sprite renderer example (for demonstration)
     "sprites": {
         "renderer": "easy_icons.renderers.SpritesRenderer",
