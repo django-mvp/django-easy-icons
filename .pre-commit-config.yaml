@@ -1,3 +1,8 @@
+# Family-standard pre-commit configuration (from django-mvp/shared
+# templates/pre-commit-config.yaml @ v0.2.0). The Python tools run as local
+# hooks inside the Poetry env, versioned by the mvp-shared[dev] bundle.
+# ruff format replaces black; ruff's UP rules replace pyupgrade.
+
 exclude: "^docs/|/migrations/|^tests/"
 default_stages: [pre-commit]
 
@@ -10,22 +15,6 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
 
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.21.2
-    hooks:
-      - id: pyupgrade
-        args: [--py310-plus]
-
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.14.7
-    hooks:
-      - id: ruff
-
-  - repo: https://github.com/psf/black
-    rev: 25.11.0
-    hooks:
-      - id: black
-
   - repo: https://github.com/python-poetry/poetry
     rev: '2.3.4'
     hooks:
@@ -33,34 +22,42 @@ repos:
       - id: poetry-lock
         stages: [manual]  # Only run manually, not in CI
 
-  # Local hooks that use Poetry environment
+  # Local hooks that use the Poetry environment
   - repo: local
     hooks:
+      - id: ruff
+        name: ruff (lint)
+        entry: poetry run ruff check --fix
+        language: system
+        types: [python]
+        require_serial: true
+      - id: ruff-format
+        name: ruff (format)
+        entry: poetry run ruff format
+        language: system
+        types: [python]
+        require_serial: true
       - id: mypy
         name: mypy
         entry: poetry run mypy
         language: system
         # Without require_serial, pre-commit splits the file list into parallel
         # batches, and concurrent mypy processes race on the shared .mypy_cache —
-        # INTERNAL ERROR on a cold cache (reproducible: rm -rf .mypy_cache, run
-        # --all-files). One serial invocation is also what mirrors-mypy ships.
+        # INTERNAL ERROR on a cold cache. One serial invocation is also what
+        # mirrors-mypy ships.
         require_serial: true
         types: [python]
         files: ^easy_icons/
-  - repo: local
-    hooks:
       - id: deptry
         name: deptry
-        language: python
-        entry: deptry
-        additional_dependencies: ["deptry==0.24.0"]
-        args: ["--verbose", "."]
+        entry: poetry run deptry .
+        language: system
         pass_filenames: false
         always_run: true
 
-
-# sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
+# pre-commit.ci runs only the env-independent hooks; the local Poetry-env hooks
+# run in CI via the shared build workflow's Code Quality job.
 ci:
   autoupdate_schedule: monthly
-  skip: [poetry-lock, poetry-export, mypy, deptry]  # Skip file-modifying hooks and slow hooks in CI
+  skip: [poetry-lock, ruff, ruff-format, mypy, deptry]
   submodules: false

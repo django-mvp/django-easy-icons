@@ -35,7 +35,7 @@ class SvgRenderer(BaseRenderer):
         super().__init__(**kwargs)
         self.svg_dir = svg_dir
 
-    def render(self, name: str, **kwargs: Any) -> SafeString:  # noqa: D401
+    def render(self, name: str, **kwargs: Any) -> SafeString:
         resolved_name = self.get_icon(name)
         template_name = f"{self.svg_dir}/{resolved_name}"
         svg_str = render_to_string(template_name)
@@ -75,7 +75,7 @@ class ProviderRenderer(BaseRenderer):
         super().__init__(**kwargs)
         self.tag = tag
 
-    def render(self, name: str, **kwargs: Any) -> SafeString:  # noqa: D401
+    def render(self, name: str, **kwargs: Any) -> SafeString:
         tag = self.tag
         resolved_icon = f"{self.get_icon(name)} {kwargs.pop('class', '')} "
         attrs = self.build_attrs(**kwargs)
@@ -104,7 +104,7 @@ class SpritesRenderer(BaseRenderer):
         super().__init__(**kwargs)
         self.sprite_url = sprite_url
 
-    def render(self, name: str, **kwargs: Any) -> SafeString:  # noqa: D401
+    def render(self, name: str, **kwargs: Any) -> SafeString:
         resolved_name = self.get_icon(name)
         sprite_url = self.sprite_url
         attrs = self.build_attrs(**kwargs)

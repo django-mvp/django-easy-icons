@@ -207,7 +207,7 @@ def get_renderer(name: str = "default") -> Any:
     try:
         renderer_class = import_string(renderer_class_path)
     except ImportError as e:
-        raise ImproperlyConfigured(f"Cannot import renderer class '{renderer_class_path}': {e}")
+        raise ImproperlyConfigured(f"Cannot import renderer class '{renderer_class_path}': {e}") from e
 
     # Extract configuration options
     renderer_kwargs = renderer_config.get("config", {}) or {}
@@ -222,7 +222,9 @@ def get_renderer(name: str = "default") -> Any:
             **renderer_kwargs,
         )
     except Exception as e:
-        raise ImproperlyConfigured(f"Cannot instantiate renderer '{name}' with class '{renderer_class_path}': {e}")
+        raise ImproperlyConfigured(
+            f"Cannot instantiate renderer '{name}' with class '{renderer_class_path}': {e}"
+        ) from e
 
     # Cache the instance
     _renderer_cache[name] = renderer_instance

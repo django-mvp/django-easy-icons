@@ -18,7 +18,7 @@ on:
 
 jobs:
   call-tests:
-    uses: django-mvp/shared/.github/workflows/tests.yml@main
+    uses: django-mvp/shared/.github/workflows/tests.yml@v0.2.0
     with:
       coverage-package: easy_icons
       django-versions: '["5.2", "6.0"]'

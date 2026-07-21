@@ -109,7 +109,7 @@ class Command(BaseCommand):
                         icon_value = icon_value[:27] + "..."
 
                     self.stdout.write(
-                        f"{icon_name:<25} | {renderer_info['renderer']:<15} | " f"{icon_value:<30} | {style(status)}"
+                        f"{icon_name:<25} | {renderer_info['renderer']:<15} | {icon_value:<30} | {style(status)}"
                     )
 
             # Summary
@@ -119,7 +119,7 @@ class Command(BaseCommand):
                     renderer_names = [r["renderer"] for r in renderers]
                     self.stdout.write(
                         self.style.WARNING(
-                            f"  '{icon_name}': {', '.join(renderer_names)} " f"(using '{renderer_names[0]}')"
+                            f"  '{icon_name}': {', '.join(renderer_names)} (using '{renderer_names[0]}')"
                         )
                     )
 
