@@ -15,6 +15,20 @@ Django Easy Icons provides a simple, consistent way to include icons in your Dja
 - **Caching**: Built-in renderer caching for performance
 - **Dict Attributes**: Pass a dict of extra attributes to the template tag via `extrakwargs`
 
+## Scope & philosophy
+
+django-easy-icons does one thing: turn a logical icon name into rendered markup, through one
+consistent call (`{% icon "home" %}` or `icon("home")`) no matter where the icon actually
+comes from — an SVG file, a font library, or a sprite sheet.
+
+It deliberately ships no icons of its own. It is not an icon library, not an asset pipeline,
+and it doesn't download, bundle, or optimise anything. Bring the icon sets you already use;
+this package only maps names to markup.
+
+When choices collide: the one consistent calling convention beats per-backend features,
+explicit settings beat magic discovery, and optional extras fail soft — a pack that can't be
+imported logs a warning instead of breaking startup.
+
 ## Installation
 
 ```bash
