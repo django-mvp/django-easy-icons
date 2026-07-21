@@ -1,13 +1,18 @@
 [tool.poetry]
+# Source of truth for the release flow: tag-release cuts v<version> when no
+# matching tag exists on a main push touching this file.
 version = "0.6.0"
 packages = [{ include = "easy_icons" }]
 requires-poetry = '>=2.0,<3.0'
 
 [tool.poetry.group.dev.dependencies]
-fairdm-dev-tools = { git = "https://github.com/FAIR-DM/dev-tools", extras = [
+# Family toolchain bundle; the pin tag is the family-standard version. The
+# python marker keeps the 3.11 package floor for consumers — dev tooling
+# never ships to them.
+mvp-shared = { git = "https://github.com/django-mvp/shared.git", tag = "v0.2.0", extras = [
     "dev",
     "test",
-] }
+], python = ">=3.12" }
 
 [tool.poetry.group.docs.dependencies]
 fairdm-docs = { git = "https://github.com/FAIR-DM/fairdm-docs", extras = [
@@ -60,13 +65,72 @@ include = "H006,H013,H020,H021,H023,H025,H030,H031"
 ignore = "H017"
 extension = "html"
 
-[tool.black]
+[tool.ruff]
+target-version = "py311"
 line-length = 120
-target-version = ['py38']
-preview = true
+fix = true
+# migrations are generated code — never linted or reformatted.
+# tests/ excluded at first adoption: ruff had never run here and wants ~250
+# mechanical fixes in tamper-protected test files; lift the exclusion via a
+# dedicated test-cleanup change (the per-file-ignores below then apply).
+exclude = ['docs/', '**/migrations/**', 'tests/']
 
-[tool.isort]
-profile = "black"
+[tool.ruff.lint]
+# Family-standard rule set (mirrors django-content-license).
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+]
+ignore = [
+    # LineTooLong
+    "E501",
+    # DoNotAssignLambda
+    "E731",
+    # Mutable class attributes (noise on Django Meta)
+    "RUF012",
+    # Avoid long messages outside the exception class
+    "TRY003",
+    # Class attribute shadowing a builtin (Django field names)
+    "A003",
+    # Function too complex
+    "C901",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests: asserts, hardcoded test passwords, blind-exception asserts, builtin
+# shadowing, unused unpacked vars — style rules that don't pay for themselves
+# in tests, which the pre-commit hooks exclude anyway.
+"tests/*" = ["S101", "S105", "B017", "A001", "RUF059"]
+# The bundled example project ships a throwaway dev SECRET_KEY by design.
+"example/settings.py" = ["S105"]
 
 [tool.mypy]
 files = ["easy_icons"]

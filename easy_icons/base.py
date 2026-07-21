@@ -59,7 +59,9 @@ class BaseRenderer(ABC):
         try:
             return self.icons[name]
         except KeyError:
-            raise IconNotFoundError(f"Icon '{name}' not listed in available icons for {self.__class__.__name__}")
+            raise IconNotFoundError(
+                f"Icon '{name}' not listed in available icons for {self.__class__.__name__}"
+            ) from None
 
     def build_attrs(self, use_defaults: bool = True, **kwargs: Any) -> str:
         """Build HTML attributes string from configuration and provided kwargs.
