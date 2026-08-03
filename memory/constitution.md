@@ -82,3 +82,7 @@ instantiation of Article V for this package).
 - One PR per feature; Sam merges; the org never merges.
 - Machine verification (tests/build/lint) gates every stage exit; no LLM judgment can
   override a red gate.
+
+---
+
+**Version**: 1.1.0 | **Ratified**: 2026-07-10 | **Last Amended**: 2026-07-21
