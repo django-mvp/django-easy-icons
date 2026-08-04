@@ -81,7 +81,9 @@ def _expand_aliases(mapping: dict[str, str]) -> dict[str, str]:
     return expanded
 
 
-def resolve_icons(renderer_config: dict[str, Any], renderer_name: str) -> dict[str, str]:
+def resolve_icons(
+    renderer_config: dict[str, Any], renderer_name: str
+) -> dict[str, str]:
     """Build the final icon mapping for a single renderer configuration.
 
     Merges icon packs (last-wins) and then explicit ``icons`` on top, expanding
@@ -155,12 +157,18 @@ def load_and_merge_packs(packs_list: list[str], renderer_name: str) -> dict[str,
             # Merge with last-wins precedence, expanding any comma-separated
             # alias keys before merging so precedence applies per icon name.
             merged_icons.update(_expand_aliases(pack_data))
-            logger.debug(f"Renderer '{renderer_name}': Loaded {len(pack_data)} icons from pack '{pack_path}'")
+            logger.debug(
+                f"Renderer '{renderer_name}': Loaded {len(pack_data)} icons from pack '{pack_path}'"
+            )
 
         except ImportError as e:
-            logger.warning(f"Renderer '{renderer_name}': Cannot import pack '{pack_path}': {e}. Skipping.")
+            logger.warning(
+                f"Renderer '{renderer_name}': Cannot import pack '{pack_path}': {e}. Skipping."
+            )
         except Exception as e:
-            logger.warning(f"Renderer '{renderer_name}': Error loading pack '{pack_path}': {e}. Skipping.")
+            logger.warning(
+                f"Renderer '{renderer_name}': Error loading pack '{pack_path}': {e}. Skipping."
+            )
 
     return merged_icons
 
@@ -199,7 +207,9 @@ def get_renderer(name: str = "default") -> Any:
         raise ImproperlyConfigured(f"EASY_ICONS['{name}'] must be a dictionary")
 
     if "renderer" not in renderer_config:
-        raise ImproperlyConfigured(f"EASY_ICONS['{name}'] must specify a 'renderer' class path")
+        raise ImproperlyConfigured(
+            f"EASY_ICONS['{name}'] must specify a 'renderer' class path"
+        )
 
     # Import and instantiate the renderer class
     renderer_class_path = renderer_config["renderer"]
@@ -207,7 +217,9 @@ def get_renderer(name: str = "default") -> Any:
     try:
         renderer_class = import_string(renderer_class_path)
     except ImportError as e:
-        raise ImproperlyConfigured(f"Cannot import renderer class '{renderer_class_path}': {e}") from e
+        raise ImproperlyConfigured(
+            f"Cannot import renderer class '{renderer_class_path}': {e}"
+        ) from e
 
     # Extract configuration options
     renderer_kwargs = renderer_config.get("config", {}) or {}

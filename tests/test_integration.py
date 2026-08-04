@@ -115,20 +115,34 @@ class TestMultiRendererIntegration:
                 "renderer": "easy_icons.renderers.SvgRenderer",
                 "config": {
                     "svg_dir": "assets/icons",
-                    "default_attrs": {"class": "svg-icon", "height": "1em", "fill": "currentColor"},
+                    "default_attrs": {
+                        "class": "svg-icon",
+                        "height": "1em",
+                        "fill": "currentColor",
+                    },
                 },
-                "icons": {"home": "house.svg", "user": "person.svg", "search": "magnifying-glass.svg"},
+                "icons": {
+                    "home": "house.svg",
+                    "user": "person.svg",
+                    "search": "magnifying-glass.svg",
+                },
             },
             "social": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
                 "config": {"tag": "i", "default_attrs": {"class": "fab"}},
-                "icons": {"facebook": "fa-facebook", "twitter": "fa-twitter", "linkedin": "fa-linkedin"},
+                "icons": {
+                    "facebook": "fa-facebook",
+                    "twitter": "fa-twitter",
+                    "linkedin": "fa-linkedin",
+                },
             },
         }
 
         with override_settings(EASY_ICONS=config):
             with patch("easy_icons.renderers.render_to_string") as mock_render:
-                mock_render.return_value = '<svg viewBox="0 0 24 24"><path d="M0 0L10 10"/></svg>'
+                mock_render.return_value = (
+                    '<svg viewBox="0 0 24 24"><path d="M0 0L10 10"/></svg>'
+                )
 
                 # Test SVG renderer with defaults and overrides
                 home_result = easy_icon("home", renderer="main")
@@ -137,8 +151,12 @@ class TestMultiRendererIntegration:
                 assert 'fill="currentColor"' in home_result
 
                 # Test with overrides - use star unpacking
-                search_result = easy_icon("search", renderer="main", width="2em", **{"class": "search-icon"})
-                assert "search-icon" in search_result  # Should override, not merge with svg-icon
+                search_result = easy_icon(
+                    "search", renderer="main", width="2em", **{"class": "search-icon"}
+                )
+                assert (
+                    "search-icon" in search_result
+                )  # Should override, not merge with svg-icon
                 assert "svg-icon" not in search_result  # Should be overridden
                 assert 'width="2em"' in search_result
 
@@ -179,7 +197,12 @@ class TestMultiRendererIntegration:
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
                 "config": {"tag": "i"},
-                "icons": {"home": "fa-home", "user": "fa-user", "admin": "fa-user-shield", "settings": "fa-cog"},
+                "icons": {
+                    "home": "fa-home",
+                    "user": "fa-user",
+                    "admin": "fa-user-shield",
+                    "settings": "fa-cog",
+                },
             }
         }
 
@@ -197,7 +220,13 @@ class TestMultiRendererIntegration:
 
         context_data = {
             "menu_items": [
-                {"url": "/", "label": "Home", "icon": "home", "css_class": "nav-link", "icon_class": "nav-icon"},
+                {
+                    "url": "/",
+                    "label": "Home",
+                    "icon": "home",
+                    "css_class": "nav-link",
+                    "icon_class": "nav-icon",
+                },
                 {
                     "url": "/profile",
                     "label": "Profile",
@@ -234,7 +263,14 @@ class TestMultiRendererIntegration:
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
-                "config": {"tag": "i", "default_attrs": {"class": "icon base", "role": "img", "aria-hidden": "true"}},
+                "config": {
+                    "tag": "i",
+                    "default_attrs": {
+                        "class": "icon base",
+                        "role": "img",
+                        "aria-hidden": "true",
+                    },
+                },
                 "icons": {"test": "fa-test"},
             }
         }
@@ -243,7 +279,9 @@ class TestMultiRendererIntegration:
             # Test class override - ProviderRenderer creates duplicate class attributes
             result1 = easy_icon("test", **{"class": "additional custom"})
             # Check that provided class appears in the css_class and icon class appears
-            assert "fa-test" in result1 and "additional" in result1 and "custom" in result1
+            assert (
+                "fa-test" in result1 and "additional" in result1 and "custom" in result1
+            )
             # ProviderRenderer has both classes due to its design (icon class + separate class attribute)
             assert "icon" in result1 and "base" in result1
 

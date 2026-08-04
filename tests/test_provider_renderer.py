@@ -24,7 +24,9 @@ class TestProviderRenderer:
         """Test ProviderRenderer initialization with icons and default_attrs."""
         icons = {"home": "fa-home", "user": "fa-user"}
         default_attrs = {"class": "icon"}
-        renderer = ProviderRenderer(tag="span", icons=icons, default_attrs=default_attrs)
+        renderer = ProviderRenderer(
+            tag="span", icons=icons, default_attrs=default_attrs
+        )
 
         assert renderer.tag == "span"
         assert renderer.icons == icons
@@ -59,7 +61,9 @@ class TestProviderRenderer:
         result = renderer.render("heart", **{"class": "large"})
 
         # Should merge the class attributes properly
-        assert 'class="fa-heart large"' in result or ('class="fa-heart"' in result and 'class="large"' in result)
+        assert 'class="fa-heart large"' in result or (
+            'class="fa-heart"' in result and 'class="large"' in result
+        )
 
     def test_render_with_attributes(self):
         """Test provider icon rendering with additional attributes."""
@@ -174,7 +178,9 @@ class TestProviderRenderer:
 
         result = renderer.render("info")
 
-        assert '<i class="fa-info" ></i>' in result or '<i class="fa-info"></i>' in result
+        assert (
+            '<i class="fa-info" ></i>' in result or '<i class="fa-info"></i>' in result
+        )
 
     def test_render_with_boolean_attributes(self):
         """Test rendering with boolean-style attributes."""

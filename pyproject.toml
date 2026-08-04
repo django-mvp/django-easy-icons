@@ -67,7 +67,8 @@ extension = "html"
 
 [tool.ruff]
 target-version = "py311"
-line-length = 120
+# line-length is deliberately unset: Ruff's default is 88, matching Black, which
+# is what Django, pytest and httpx ship. PEP 8 caps a team's own preference at 99.
 fix = true
 # migrations are generated code — never linted or reformatted.
 exclude = ['docs/', '**/migrations/**']

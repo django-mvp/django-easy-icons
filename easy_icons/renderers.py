@@ -79,7 +79,9 @@ class ProviderRenderer(BaseRenderer):
         tag = self.tag
         resolved_icon = f"{self.get_icon(name)} {kwargs.pop('class', '')} "
         attrs = self.build_attrs(**kwargs)
-        element = self.template.format(tag=tag, css_class=resolved_icon.strip(), attrs=attrs).strip()
+        element = self.template.format(
+            tag=tag, css_class=resolved_icon.strip(), attrs=attrs
+        ).strip()
         return self.safe_return(element)
 
 
@@ -109,6 +111,8 @@ class SpritesRenderer(BaseRenderer):
         sprite_url = self.sprite_url
         attrs = self.build_attrs(**kwargs)
 
-        element = self.template.format(sprite_url=sprite_url, resolved_name=resolved_name, attrs=attrs).strip()
+        element = self.template.format(
+            sprite_url=sprite_url, resolved_name=resolved_name, attrs=attrs
+        ).strip()
 
         return self.safe_return(element)

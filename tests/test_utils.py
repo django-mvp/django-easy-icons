@@ -87,7 +87,13 @@ class TestGetRenderer:
 
     def test_get_renderer_missing_renderer_config(self):
         """Test get_renderer with missing renderer in config."""
-        config = {"other": {"renderer": "easy_icons.renderers.SvgRenderer", "config": {}, "icons": {}}}
+        config = {
+            "other": {
+                "renderer": "easy_icons.renderers.SvgRenderer",
+                "config": {},
+                "icons": {},
+            }
+        }
 
         with override_settings(EASY_ICONS=config):
             with pytest.raises(ImproperlyConfigured) as exc_info:
@@ -117,7 +123,13 @@ class TestGetRenderer:
 
     def test_get_renderer_invalid_renderer_class(self):
         """Test get_renderer with invalid renderer class path."""
-        config = {"default": {"renderer": "nonexistent.module.RendererClass", "config": {}, "icons": {}}}
+        config = {
+            "default": {
+                "renderer": "nonexistent.module.RendererClass",
+                "config": {},
+                "icons": {},
+            }
+        }
 
         with override_settings(EASY_ICONS=config):
             with pytest.raises(ImproperlyConfigured) as exc_info:
@@ -143,7 +155,13 @@ class TestGetRenderer:
 
     def test_get_renderer_config_none(self):
         """Test get_renderer with None config values."""
-        config = {"default": {"renderer": "easy_icons.renderers.SvgRenderer", "config": None, "icons": None}}
+        config = {
+            "default": {
+                "renderer": "easy_icons.renderers.SvgRenderer",
+                "config": None,
+                "icons": None,
+            }
+        }
 
         with override_settings(EASY_ICONS=config):
             renderer = utils.get_renderer()
@@ -167,7 +185,10 @@ class TestGetRenderer:
         config = {
             "sprites": {
                 "renderer": "easy_icons.renderers.SpritesRenderer",
-                "config": {"sprite_url": "/static/icons.svg", "default_attrs": {"class": "sprite", "width": "24"}},
+                "config": {
+                    "sprite_url": "/static/icons.svg",
+                    "default_attrs": {"class": "sprite", "width": "24"},
+                },
                 "icons": {"logo": "brand-logo", "menu": "hamburger"},
             }
         }
@@ -186,7 +207,13 @@ class TestClearCache:
 
     def test_clear_cache(self):
         """Test that clear_cache clears the renderer cache."""
-        config = {"default": {"renderer": "easy_icons.renderers.SvgRenderer", "config": {}, "icons": {}}}
+        config = {
+            "default": {
+                "renderer": "easy_icons.renderers.SvgRenderer",
+                "config": {},
+                "icons": {},
+            }
+        }
 
         with override_settings(EASY_ICONS=config):
             # Get renderer to populate cache
@@ -231,7 +258,11 @@ class TestIcon:
     def test_icon_named_renderer(self):
         """Test icon function with named renderer."""
         config = {
-            "default": {"renderer": "easy_icons.renderers.SvgRenderer", "config": {}, "icons": {"home": "home.svg"}},
+            "default": {
+                "renderer": "easy_icons.renderers.SvgRenderer",
+                "config": {},
+                "icons": {"home": "home.svg"},
+            },
             "fontawesome": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
                 "config": {"tag": "i"},
@@ -282,7 +313,13 @@ class TestIcon:
 
     def test_icon_renderer_not_found(self):
         """Test icon function with non-existent renderer."""
-        config = {"default": {"renderer": "easy_icons.renderers.SvgRenderer", "config": {}, "icons": {}}}
+        config = {
+            "default": {
+                "renderer": "easy_icons.renderers.SvgRenderer",
+                "config": {},
+                "icons": {},
+            }
+        }
 
         with override_settings(EASY_ICONS=config), pytest.raises(ImproperlyConfigured):
             utils.icon("test", renderer="nonexistent")

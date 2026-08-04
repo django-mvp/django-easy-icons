@@ -121,8 +121,12 @@ def create_test_settings(**easy_icons_config):
 
 
 # Test constants
-TEST_SVG_CONTENT = '<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>'
-TEST_SVG_WITH_ATTRS = '<svg class="existing" width="16" height="16"><path d="M0 0L10 10"/></svg>'
+TEST_SVG_CONTENT = (
+    '<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>'
+)
+TEST_SVG_WITH_ATTRS = (
+    '<svg class="existing" width="16" height="16"><path d="M0 0L10 10"/></svg>'
+)
 TEST_COMPLEX_SVG = """<svg
     viewBox="0 0 24 24"
     data-icon="home"
@@ -146,7 +150,9 @@ class TestHelpers:
     def assert_html_not_contains(html, *unexpected_strings):
         """Assert that HTML does not contain any unexpected strings."""
         for unexpected in unexpected_strings:
-            assert unexpected not in html, f"Unexpected '{unexpected}' found in HTML: {html}"
+            assert unexpected not in html, (
+                f"Unexpected '{unexpected}' found in HTML: {html}"
+            )
 
     @staticmethod
     def assert_valid_html_attributes(html):
@@ -164,9 +170,13 @@ class TestHelpers:
 
             # Attribute values should not contain unescaped quotes of the same type
             if quote_char == '"':
-                assert '"' not in attr_value, f"Unescaped quote in attribute value: {attr_value}"
+                assert '"' not in attr_value, (
+                    f"Unescaped quote in attribute value: {attr_value}"
+                )
             else:
-                assert "'" not in attr_value, f"Unescaped quote in attribute value: {attr_value}"
+                assert "'" not in attr_value, (
+                    f"Unescaped quote in attribute value: {attr_value}"
+                )
 
     @staticmethod
     def extract_classes(html):
