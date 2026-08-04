@@ -156,9 +156,9 @@ def test_custom_renderer():
         icons={"home": "custom-home"},
         default_attrs={"class": "icon"}
     )
-    
+
     result = renderer.render("home", **{"class": "large"})
-    
+
     assert '<span' in result
     assert 'custom-home' in result
     assert 'icon large' in result
