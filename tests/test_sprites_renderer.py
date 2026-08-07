@@ -2,6 +2,7 @@
 
 import pytest
 from django.utils.safestring import SafeString
+
 from easy_icons.exceptions import IconNotFoundError
 from easy_icons.renderers import SpritesRenderer
 
@@ -14,18 +15,14 @@ class TestSpritesRenderer:
         with pytest.raises(ValueError) as exc_info:
             SpritesRenderer()
 
-        assert "SpritesRenderer requires 'sprite_url' keyword argument" in str(
-            exc_info.value
-        )
+        assert "SpritesRenderer requires 'sprite_url' keyword argument" in str(exc_info.value)
 
     def test_init_with_none_sprite_url(self):
         """Test SpritesRenderer raises error with None sprite_url."""
         with pytest.raises(ValueError) as exc_info:
             SpritesRenderer(sprite_url=None)
 
-        assert "SpritesRenderer requires 'sprite_url' keyword argument" in str(
-            exc_info.value
-        )
+        assert "SpritesRenderer requires 'sprite_url' keyword argument" in str(exc_info.value)
 
     def test_init_with_sprite_url(self):
         """Test SpritesRenderer initialization with sprite_url."""
@@ -36,9 +33,7 @@ class TestSpritesRenderer:
         """Test SpritesRenderer initialization with all parameters."""
         icons = {"logo": "brand-logo", "menu": "hamburger"}
         default_attrs = {"class": "sprite-icon", "width": "24", "height": "24"}
-        renderer = SpritesRenderer(
-            sprite_url="/assets/sprites.svg", icons=icons, default_attrs=default_attrs
-        )
+        renderer = SpritesRenderer(sprite_url="/assets/sprites.svg", icons=icons, default_attrs=default_attrs)
 
         assert renderer.sprite_url == "/assets/sprites.svg"
         assert renderer.icons == icons
@@ -72,9 +67,7 @@ class TestSpritesRenderer:
         """Test sprite rendering with default attributes."""
         icons = {"user": "user-profile"}
         default_attrs = {"class": "icon", "width": "24", "height": "24"}
-        renderer = SpritesRenderer(
-            sprite_url="/sprites.svg", icons=icons, default_attrs=default_attrs
-        )
+        renderer = SpritesRenderer(sprite_url="/sprites.svg", icons=icons, default_attrs=default_attrs)
 
         result = renderer.render("user")
 
@@ -87,9 +80,7 @@ class TestSpritesRenderer:
         """Test sprite rendering merging default and custom attributes."""
         icons = {"settings": "settings"}
         default_attrs = {"class": "sprite", "width": "16"}
-        renderer = SpritesRenderer(
-            sprite_url="/icons.svg", icons=icons, default_attrs=default_attrs
-        )
+        renderer = SpritesRenderer(sprite_url="/icons.svg", icons=icons, default_attrs=default_attrs)
 
         test_attrs = {"class": "large"}
         result = renderer.render("settings", height="32", **test_attrs)
@@ -109,9 +100,7 @@ class TestSpritesRenderer:
         """Test rendering without default attributes."""
         icons = {"download": "download-arrow"}
         default_attrs = {"class": "sprite", "width": "20"}
-        renderer = SpritesRenderer(
-            sprite_url="/sprites.svg", icons=icons, default_attrs=default_attrs
-        )
+        renderer = SpritesRenderer(sprite_url="/sprites.svg", icons=icons, default_attrs=default_attrs)
 
         test_attrs = {"class": "custom"}
         result = renderer.render("download", use_defaults=False, **test_attrs)

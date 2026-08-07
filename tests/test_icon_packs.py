@@ -34,10 +34,7 @@ class TestPackLoading:
 
     def test_load_single_pack(self):
         """Test loading a single pack."""
-        result = utils.load_and_merge_packs(
-            ["tests.test_icon_packs.PACK_ONE"],
-            "test_renderer"
-        )
+        result = utils.load_and_merge_packs(["tests.test_icon_packs.PACK_ONE"], "test_renderer")
         assert result == PACK_ONE
 
     def test_load_multiple_packs_last_wins(self):
@@ -47,9 +44,9 @@ class TestPackLoading:
                 "tests.test_icon_packs.PACK_ONE",
                 "tests.test_icon_packs.PACK_TWO",
             ],
-            "test_renderer"
+            "test_renderer",
         )
-        
+
         # PACK_TWO should override 'user' from PACK_ONE
         assert result["user"] == "user-v2.svg"
         # Original values should remain
@@ -66,9 +63,9 @@ class TestPackLoading:
                 "tests.test_icon_packs.PACK_TWO",
                 "tests.test_icon_packs.PACK_THREE",
             ],
-            "test_renderer"
+            "test_renderer",
         )
-        
+
         # PACK_THREE overrides 'star'
         assert result["star"] == "star-v3.svg"
         # PACK_TWO overrides 'user'
@@ -86,9 +83,9 @@ class TestPackLoading:
                 "tests.test_icon_packs.PACK_ONE",
                 "tests.test_icon_packs.NONEXISTENT_PACK",
             ],
-            "test_renderer"
+            "test_renderer",
         )
-        
+
         # Should still load PACK_ONE
         assert result == PACK_ONE
         # Should log warning
@@ -102,9 +99,9 @@ class TestPackLoading:
                 "tests.test_icon_packs.PACK_ONE",
                 "tests.test_icon_packs.INVALID_PACK",
             ],
-            "test_renderer"
+            "test_renderer",
         )
-        
+
         # Should still load PACK_ONE
         assert result == PACK_ONE
         # Should log warning
@@ -133,7 +130,7 @@ class TestPacksInRendererConfig:
                 "icons": {},
             }
         }
-        
+
         with override_settings(EASY_ICONS=config):
             renderer = utils.get_renderer("test")
             assert renderer.icons == PACK_ONE
@@ -153,7 +150,7 @@ class TestPacksInRendererConfig:
             }
         ):
             renderer = utils.get_renderer("test")
-            
+
             # PACK_TWO should override 'user'
             assert renderer.icons["user"] == "user-v2.svg"
             assert renderer.icons["home"] == "home-v1.svg"
@@ -177,7 +174,7 @@ class TestPacksInRendererConfig:
             }
         ):
             renderer = utils.get_renderer("test")
-            
+
             # Explicit 'user' should override both packs
             assert renderer.icons["user"] == "user-explicit.svg"
             # Pack icons should still be present
@@ -199,7 +196,7 @@ class TestPacksInRendererConfig:
             }
         ):
             renderer = utils.get_renderer("test")
-            
+
             assert renderer.icons == {"only": "explicit.svg"}
 
     def test_renderer_with_empty_packs_list(self):
@@ -214,7 +211,7 @@ class TestPacksInRendererConfig:
             }
         ):
             renderer = utils.get_renderer("test")
-            
+
             assert renderer.icons == {"only": "explicit.svg"}
 
 
@@ -237,7 +234,7 @@ class TestIconRegistryWithPacks:
             }
         ):
             utils.build_icon_registry()
-            
+
             # All icons from PACK_ONE should be registered
             assert utils._icon_registry["home"] == "svg"
             assert utils._icon_registry["user"] == "svg"
@@ -260,11 +257,11 @@ class TestIconRegistryWithPacks:
             }
         ):
             utils.build_icon_registry()
-            
+
             # SVG renderer icons
             assert utils._icon_registry["home"] == "svg"
             assert utils._icon_registry["custom"] == "svg"
-            
+
             # FontAwesome icons (note: 'star' will be collision)
             assert utils._icon_registry["heart"] == "fontawesome"
 
@@ -283,11 +280,11 @@ class TestIconRegistryWithPacks:
             }
         ):
             utils.build_icon_registry()
-            
+
             # Verify icons are registered
             assert "user" in utils._icon_registry
             assert "home" in utils._icon_registry
-            
+
             # Get renderer and verify icon values
             renderer = utils.get_renderer("svg")
             assert renderer.icons["user"] == "user-explicit.svg"
@@ -310,10 +307,10 @@ class TestIconRegistryWithPacks:
             }
         ):
             utils.build_icon_registry()
-            
+
             # 'user' is in both packs - default should win
             assert utils._icon_registry["user"] == "default"
-            
+
             # Should log collision warning
             assert "Icon name collision" in caplog.text
             assert "user" in caplog.text
@@ -340,7 +337,7 @@ class TestIconRenderingWithPacks:
             EASY_ICONS_FAIL_SILENTLY=False,
         ):
             utils.build_icon_registry()
-            
+
             # Icon exists in pack, but won't render without actual file
             # Just verify it's found in the renderer
             renderer = utils.get_renderer("default")
@@ -360,11 +357,11 @@ class TestIconRenderingWithPacks:
             }
         ):
             renderer = utils.get_renderer("fontawesome")
-            
+
             # Pack icon
             result = renderer.render("heart")
             assert 'class="fa-heart"' in result
-            
+
             # Explicit icon
             result = renderer.render("custom")
             assert 'class="fa-custom"' in result
@@ -391,7 +388,7 @@ class TestPacksEdgeCases:
             }
         ):
             renderer = utils.get_renderer("test")
-            
+
             # Should have only explicit icon
             assert renderer.icons == {"fallback": "fallback.svg"}
             # Should log warning
@@ -412,7 +409,7 @@ class TestPacksEdgeCases:
             }
         ):
             renderer = utils.get_renderer("test")
-            
+
             # Should have PACK_ONE data (loaded twice but identical)
             assert renderer.icons == PACK_ONE
 
@@ -436,12 +433,12 @@ class TestPacksEdgeCases:
             }
         ):
             renderer = utils.get_renderer("test")
-            
+
             # All three icons should use explicit values
             assert renderer.icons["home"] == "home-final.svg"
             assert renderer.icons["user"] == "user-final.svg"
             assert renderer.icons["star"] == "star-final.svg"
-            
+
             # Pack-only icons should still exist
             assert renderer.icons["heart"] == "heart-v2.svg"
             assert renderer.icons["admin"] == "admin-v3.svg"

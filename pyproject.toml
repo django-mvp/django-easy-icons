@@ -70,10 +70,7 @@ target-version = "py311"
 line-length = 120
 fix = true
 # migrations are generated code — never linted or reformatted.
-# tests/ excluded at first adoption: ruff had never run here and wants ~250
-# mechanical fixes in tamper-protected test files; lift the exclusion via a
-# dedicated test-cleanup change (the per-file-ignores below then apply).
-exclude = ['docs/', '**/migrations/**', 'tests/']
+exclude = ['docs/', '**/migrations/**']
 
 [tool.ruff.lint]
 # Family-standard rule set (mirrors django-content-license).
@@ -126,9 +123,10 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 # Tests: asserts, hardcoded test passwords, blind-exception asserts, builtin
-# shadowing, unused unpacked vars — style rules that don't pay for themselves
-# in tests, which the pre-commit hooks exclude anyway.
-"tests/*" = ["S101", "S105", "B017", "A001", "RUF059"]
+# shadowing, unused variables, nested-with and raise-in-try — style rules that
+# don't pay for themselves in tests (rewriting test control flow for them adds
+# risk without value).
+"tests/*" = ["S101", "S105", "B017", "A001", "RUF059", "F841", "SIM117", "TRY301"]
 # The bundled example project ships a throwaway dev SECRET_KEY by design.
 "example/settings.py" = ["S105"]
 
