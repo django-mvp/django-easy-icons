@@ -33,7 +33,7 @@ class TestIconNotFoundError:
         """Test raising IconNotFoundError."""
         with pytest.raises(IconNotFoundError) as exc_info:
             raise IconNotFoundError("Icon 'missing' not found")
-        
+
         assert "Icon 'missing' not found" in str(exc_info.value)
 
     def test_icon_not_found_error_catching(self):
@@ -50,7 +50,7 @@ class TestIconNotFoundError:
         icon_name = "missing_icon"
         renderer_name = "TestRenderer"
         message = f"Icon '{icon_name}' not found in {renderer_name}"
-        
+
         error = IconNotFoundError(message)
         assert icon_name in str(error)
         assert renderer_name in str(error)
@@ -84,7 +84,7 @@ class TestInvalidSvgError:
         """Test raising InvalidSvgError."""
         with pytest.raises(InvalidSvgError) as exc_info:
             raise InvalidSvgError("No <svg> tag found")
-        
+
         assert "No <svg> tag found" in str(exc_info.value)
 
     def test_invalid_svg_error_catching(self):
@@ -100,7 +100,7 @@ class TestInvalidSvgError:
         """Test InvalidSvgError with formatted message."""
         svg_content = "<div>Not SVG</div>"
         message = f"Invalid SVG content: {svg_content}"
-        
+
         error = InvalidSvgError(message)
         assert svg_content in str(error)
         assert "Invalid SVG content" in str(error)
@@ -113,7 +113,7 @@ class TestExceptionHierarchy:
         """Test that both custom exceptions inherit from Exception."""
         icon_error = IconNotFoundError("test")
         svg_error = InvalidSvgError("test")
-        
+
         assert isinstance(icon_error, Exception)
         assert isinstance(svg_error, Exception)
 
@@ -128,7 +128,7 @@ class TestExceptionHierarchy:
         # Test IconNotFoundError
         with pytest.raises(IconNotFoundError):
             raise IconNotFoundError("Not found")
-        
+
         # Test InvalidSvgError
         with pytest.raises(InvalidSvgError):
             raise InvalidSvgError("Invalid")
@@ -140,7 +140,7 @@ class TestExceptionHierarchy:
             raise IconNotFoundError("Not found")
         except Exception as e:
             assert isinstance(e, IconNotFoundError)
-        
+
         # InvalidSvgError
         try:
             raise InvalidSvgError("Invalid")
@@ -151,7 +151,7 @@ class TestExceptionHierarchy:
         """Test that exception args are accessible."""
         icon_error = IconNotFoundError("icon not found")
         svg_error = InvalidSvgError("svg invalid")
-        
+
         assert icon_error.args == ("icon not found",)
         assert svg_error.args == ("svg invalid",)
 
@@ -159,7 +159,7 @@ class TestExceptionHierarchy:
         """Test exception representation."""
         icon_error = IconNotFoundError("test icon error")
         svg_error = InvalidSvgError("test svg error")
-        
+
         assert "IconNotFoundError" in repr(icon_error)
         assert "test icon error" in repr(icon_error)
         assert "InvalidSvgError" in repr(svg_error)

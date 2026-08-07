@@ -127,11 +127,11 @@ TEST_SVG_CONTENT = (
 TEST_SVG_WITH_ATTRS = (
     '<svg class="existing" width="16" height="16"><path d="M0 0L10 10"/></svg>'
 )
-TEST_COMPLEX_SVG = """<svg 
-    viewBox="0 0 24 24" 
-    data-icon="home" 
+TEST_COMPLEX_SVG = """<svg
+    viewBox="0 0 24 24"
+    data-icon="home"
     class="icon-svg"
-    fill="none" 
+    fill="none"
     stroke="currentColor">
     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
 </svg>"""
