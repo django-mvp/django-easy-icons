@@ -32,7 +32,9 @@ register = template.Library()
 
 
 @register.simple_tag
-def icon(name: str, renderer: str | None = None, defaults: dict | None = None, **kwargs) -> SafeString | str:
+def icon(
+    name: str, renderer: str | None = None, defaults: dict | None = None, **kwargs
+) -> SafeString | str:
     """Template tag to render an icon.
 
     Usage:

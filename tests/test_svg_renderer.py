@@ -27,7 +27,9 @@ class TestSvgRenderer:
         """Test SvgRenderer initialization with icons and default_attrs."""
         icons = {"home": "house.svg", "user": "profile.svg"}
         default_attrs = {"class": "svg-icon", "height": "24px"}
-        renderer = SvgRenderer(svg_dir="assets", icons=icons, default_attrs=default_attrs)
+        renderer = SvgRenderer(
+            svg_dir="assets", icons=icons, default_attrs=default_attrs
+        )
 
         assert renderer.svg_dir == "assets"
         assert renderer.icons == icons
@@ -60,7 +62,9 @@ class TestSvgRenderer:
     @patch("easy_icons.renderers.render_to_string")
     def test_render_with_attributes(self, mock_render):
         """Test SVG rendering with additional attributes."""
-        mock_render.return_value = '<svg viewBox="0 0 24 24"><path d="M0 0L10 10"/></svg>'
+        mock_render.return_value = (
+            '<svg viewBox="0 0 24 24"><path d="M0 0L10 10"/></svg>'
+        )
         icons = {"star": "star.svg"}
         renderer = SvgRenderer(icons=icons)
 

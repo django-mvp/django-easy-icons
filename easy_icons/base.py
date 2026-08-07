@@ -36,7 +36,11 @@ class BaseRenderer(ABC):
     """
 
     def __init__(
-        self, *, icons: dict[str, str] | None = None, default_attrs: dict[str, Any] | None = None, **_: Any
+        self,
+        *,
+        icons: dict[str, str] | None = None,
+        default_attrs: dict[str, Any] | None = None,
+        **_: Any,
     ):  # pragma: no cover - slim wrapper
         """Initialize the base renderer.
 

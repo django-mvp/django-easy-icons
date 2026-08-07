@@ -34,7 +34,9 @@ class TestPackLoading:
 
     def test_load_single_pack(self):
         """Test loading a single pack."""
-        result = utils.load_and_merge_packs(["tests.test_icon_packs.PACK_ONE"], "test_renderer")
+        result = utils.load_and_merge_packs(
+            ["tests.test_icon_packs.PACK_ONE"], "test_renderer"
+        )
         assert result == PACK_ONE
 
     def test_load_multiple_packs_last_wins(self):

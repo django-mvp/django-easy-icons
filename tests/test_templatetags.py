@@ -61,7 +61,9 @@ class TestIconTemplateTag:
 
         with override_settings(EASY_ICONS=config):
             # Pass attributes as keyword arguments, being explicit about defaults=None
-            result = icon("star", defaults=None, **{"class": "large", "data-role": "button"})
+            result = icon(
+                "star", defaults=None, **{"class": "large", "data-role": "button"}
+            )
 
             # May have separate class attributes
             assert "fa-star" in result and "large" in result
@@ -138,7 +140,9 @@ class TestIconTemplateTag:
             },
         }
 
-        template_content = "{% load easy_icons %}{% icon 'home' renderer='fontawesome' %}"
+        template_content = (
+            "{% load easy_icons %}{% icon 'home' renderer='fontawesome' %}"
+        )
 
         with override_settings(EASY_ICONS=config):
             with patch("easy_icons.renderers.render_to_string") as mock_render:
@@ -181,7 +185,9 @@ class TestIconTemplateTag:
             }
         }
 
-        template_content = "{% load easy_icons %}{% icon 'check' hidden=True disabled=False %}"
+        template_content = (
+            "{% load easy_icons %}{% icon 'check' hidden=True disabled=False %}"
+        )
 
         with override_settings(EASY_ICONS=config):
             template = Template(template_content)
@@ -296,11 +302,15 @@ class TestIconTemplateTag:
             }
         }
 
-        template_content = "{% load easy_icons %}{% icon 'bookmark' defaults=attr_dict %}"
+        template_content = (
+            "{% load easy_icons %}{% icon 'bookmark' defaults=attr_dict %}"
+        )
 
         with override_settings(EASY_ICONS=config):
             template = Template(template_content)
-            context = Context({"attr_dict": {"class": "nav-icon", "data-role": "button"}})
+            context = Context(
+                {"attr_dict": {"class": "nav-icon", "data-role": "button"}}
+            )
             result = template.render(context)
 
             assert 'class="fa-bookmark nav-icon"' in result
@@ -320,7 +330,9 @@ class TestIconTemplateTag:
 
         with override_settings(EASY_ICONS=config):
             template = Template(template_content)
-            context = Context({"attr_dict": {"class": "default-class", "data-id": "123"}})
+            context = Context(
+                {"attr_dict": {"class": "default-class", "data-id": "123"}}
+            )
             result = template.render(context)
 
             # Template attributes should override defaults

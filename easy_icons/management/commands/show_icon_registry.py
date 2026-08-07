@@ -56,17 +56,29 @@ class Command(BaseCommand):
                 continue
 
             for icon_name, icon_value in icons.items():
-                icon_to_renderers[icon_name].append({"renderer": renderer_name, "value": icon_value})
+                icon_to_renderers[icon_name].append(
+                    {"renderer": renderer_name, "value": icon_value}
+                )
 
         # Identify collisions
-        collisions = {icon: renderers for icon, renderers in icon_to_renderers.items() if len(renderers) > 1}
+        collisions = {
+            icon: renderers
+            for icon, renderers in icon_to_renderers.items()
+            if len(renderers) > 1
+        }
 
         if output_format == "json":
-            self._output_json(icon_to_renderers, collisions, fail_silently, show_collisions_only)
+            self._output_json(
+                icon_to_renderers, collisions, fail_silently, show_collisions_only
+            )
         else:
-            self._output_table(icon_to_renderers, collisions, fail_silently, show_collisions_only)
+            self._output_table(
+                icon_to_renderers, collisions, fail_silently, show_collisions_only
+            )
 
-    def _output_table(self, icon_to_renderers, collisions, fail_silently, show_collisions_only):
+    def _output_table(
+        self, icon_to_renderers, collisions, fail_silently, show_collisions_only
+    ):
         """Output registry as a formatted table."""
         # Settings info
         self.stdout.write(self.style.SUCCESS("\n=== Easy Icons Configuration ==="))
@@ -76,7 +88,9 @@ class Command(BaseCommand):
 
         if show_collisions_only:
             if not collisions:
-                self.stdout.write(self.style.SUCCESS("No icon name collisions detected!"))
+                self.stdout.write(
+                    self.style.SUCCESS("No icon name collisions detected!")
+                )
                 return
 
             self.stdout.write(self.style.WARNING("=== Icon Name Collisions ===\n"))
@@ -86,11 +100,15 @@ class Command(BaseCommand):
                 for i, renderer_info in enumerate(renderers):
                     marker = "✓ USED" if i == 0 else "✗ shadowed"
                     style = self.style.SUCCESS if i == 0 else self.style.ERROR
-                    self.stdout.write(f"  {style(marker)} {renderer_info['renderer']:15} → {renderer_info['value']}")
+                    self.stdout.write(
+                        f"  {style(marker)} {renderer_info['renderer']:15} → {renderer_info['value']}"
+                    )
         else:
             # Full registry
             self.stdout.write(self.style.SUCCESS("=== Icon Registry ==="))
-            self.stdout.write(f"{'Icon Name':<25} | {'Renderer':<15} | {'Icon Value':<30} | {'Status'}")
+            self.stdout.write(
+                f"{'Icon Name':<25} | {'Renderer':<15} | {'Icon Value':<30} | {'Status'}"
+            )
             self.stdout.write("-" * 90)
 
             for icon_name in sorted(icon_to_renderers.keys()):
@@ -114,7 +132,9 @@ class Command(BaseCommand):
 
             # Summary
             if collisions:
-                self.stdout.write("\n" + self.style.WARNING("=== Collision Summary ==="))
+                self.stdout.write(
+                    "\n" + self.style.WARNING("=== Collision Summary ===")
+                )
                 for icon_name, renderers in sorted(collisions.items()):
                     renderer_names = [r["renderer"] for r in renderers]
                     self.stdout.write(
@@ -123,7 +143,9 @@ class Command(BaseCommand):
                         )
                     )
 
-    def _output_json(self, icon_to_renderers, collisions, fail_silently, show_collisions_only):
+    def _output_json(
+        self, icon_to_renderers, collisions, fail_silently, show_collisions_only
+    ):
         """Output registry as JSON."""
         if show_collisions_only:
             output = {
