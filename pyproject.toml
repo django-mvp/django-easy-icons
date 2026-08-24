@@ -9,7 +9,7 @@ requires-poetry = '>=2.0,<3.0'
 # Family toolchain bundle; the pin tag is the family-standard version. The
 # python marker keeps the 3.11 package floor for consumers — dev tooling
 # never ships to them.
-mvp-shared = { git = "https://github.com/django-mvp/shared.git", tag = "v0.2.0", extras = [
+mvp-shared = { git = "https://github.com/django-mvp/shared.git", tag = "v0.4.0", extras = [
     "dev",
     "test",
 ], python = ">=3.12" }
