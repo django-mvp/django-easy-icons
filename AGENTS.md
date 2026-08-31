@@ -38,4 +38,4 @@ every PR (no paths filter on `pull_request`; required checks must always report)
 This repo is operated by the autonomous engineering org (Forge). Feature work runs
 spec→plan→tasks→implement→review→PR through org-side skills — there is no Spec Kit install
 here; `specs/NNN-slug/` directories are generated per feature. Constitution:
-`memory/constitution.md`. Budget overrides: none (org defaults apply).
+`CONSTITUTION.md`. Budget overrides: none (org defaults apply).
