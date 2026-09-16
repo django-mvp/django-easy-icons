@@ -9,15 +9,17 @@ requires-poetry = '>=2.0,<3.0'
 # Family toolchain bundle; the pin tag is the family-standard version. The
 # python marker keeps the 3.11 package floor for consumers — dev tooling
 # never ships to them.
-mvp-shared = { git = "https://github.com/django-mvp/shared.git", tag = "v0.2.0", extras = [
+mvp-shared = { git = "https://github.com/django-mvp/shared.git", tag = "v0.4.1", extras = [
     "dev",
     "test",
 ], python = ">=3.12" }
 
 [tool.poetry.group.docs.dependencies]
+# Same marker as mvp-shared above: docs tooling needs 3.12 but never ships to
+# consumers, so it must not drag the package's own 3.11 floor up with it.
 fairdm-docs = { git = "https://github.com/FAIR-DM/fairdm-docs", extras = [
     "sphinx_book_theme",
-] }
+], python = ">=3.12" }
 
 [build-system]
 requires = ['poetry-core (>=2.0,<3.0)']
