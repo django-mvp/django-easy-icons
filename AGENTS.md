@@ -6,11 +6,14 @@ domain glossary — use its vocabulary.
 
 ## Stack & commands
 
-- **Stack:** Python 3.11–3.12, Django 4.2/5.2, Poetry-managed, src layout (`src/easy_icons/`)
-- **Install:** `poetry install`
-- **Test:** `poetry run pytest` (coverage: `poetry run pytest --cov=easy_icons`)
-- **Type-check:** `poetry run mypy src`
-- **Build:** `poetry build`
+- **Stack:** Python 3.11+, Django 5.2, 6.0 and 6.1, uv-managed (hatchling build backend), package in `easy_icons/`
+- **Install:** `uv sync`
+- **Test:** `uv run pytest` (coverage: `uv run pytest --cov=easy_icons`)
+- **Lint:** `uv run pre-commit run --all-files` (ruff lint + format, mypy, deptry)
+- **Type-check:** `uv run mypy`
+- **Build:** `uv build`
+- **Bump the version:** `uv version` — never edit `pyproject.toml` alone, because `uv.lock`
+  records this package's own version too
 - **Docs:** Sphinx under `docs/`; example project under `example/`
 
 ## Agent skills

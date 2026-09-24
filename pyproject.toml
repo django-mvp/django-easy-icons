@@ -1,29 +1,31 @@
-[tool.poetry]
-# Source of truth for the release flow: tag-release cuts v<version> when no
-# matching tag exists on a main push touching this file.
-version = "0.6.0"
-packages = [{ include = "easy_icons" }]
-requires-poetry = '>=2.0,<3.0'
+[tool.hatch.build.targets.wheel]
+packages = ["easy_icons"]
 
-[tool.poetry.group.dev.dependencies]
-# Family toolchain bundle; the pin tag is the family-standard version. The
-# python marker keeps the 3.11 package floor for consumers — dev tooling
-# never ships to them.
-mvp-shared = { git = "https://github.com/django-mvp/shared.git", tag = "v0.4.1", extras = [
-    "dev",
-    "test",
-], python = ">=3.12" }
+# Hatchling's default source distribution is the whole working tree: tests, the
+# example project, documentation and CI configuration. Listing what ships keeps
+# it to the package, the readme and the licence. Hatchling adds .gitignore
+# itself, so that a build from the source distribution leaves out what the
+# repository does.
+[tool.hatch.build.targets.sdist]
+include = ["easy_icons", "README.md", "LICENSE"]
 
-[tool.poetry.group.docs.dependencies]
-# Same marker as mvp-shared above: docs tooling needs 3.12 but never ships to
+[dependency-groups]
+# Shared toolchain bundle from django-mvp/shared, pinned to a release tag in
+# [tool.uv.sources] below so every package in this organisation runs one version
+# of each tool. The python marker keeps the 3.11 package floor for consumers:
+# dev tooling never ships to them.
+dev = ["mvp-shared[dev,test]; python_version >= '3.12'"]
+# Same marker as the bundle above: docs tooling needs 3.12 but never ships to
 # consumers, so it must not drag the package's own 3.11 floor up with it.
-fairdm-docs = { git = "https://github.com/FAIR-DM/fairdm-docs", extras = [
-    "sphinx_book_theme",
-], python = ">=3.12" }
+docs = ["fairdm-docs[sphinx_book_theme]; python_version >= '3.12'"]
+
+[tool.uv.sources]
+mvp-shared = { git = "https://github.com/django-mvp/shared.git", tag = "v0.6.0" }
+fairdm-docs = { git = "https://github.com/FAIR-DM/fairdm-docs" }
 
 [build-system]
-requires = ['poetry-core (>=2.0,<3.0)']
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tests.settings"
@@ -107,7 +109,9 @@ DEP003 = ["easy_icons"]
 name = "django-easy-icons"
 description = "Easy, flexible icons for Django"
 license = "MIT"
-dynamic = ["version"]
+# Source of truth for the release flow: tag-release cuts v<version> when no
+# matching tag exists on a main push touching this file.
+version = "0.6.0"
 readme = "README.md"
 authors = [{ name = "Sam", email = "samuel.scott.jennings@gmail.com" }]
 requires-python = '>=3.11,<4.0'

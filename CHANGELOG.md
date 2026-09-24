@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The package is built with hatchling instead of poetry-core, and developed with uv instead of
+  Poetry. The wheel contains the same files as before. The source distribution holds the package, the
+  readme and the licence, plus the repository's `.gitignore`, which hatchling includes so that a
+  build from it leaves out the same files. It no longer carries the two `README.md` files from
+  `tests/` and `example/`.
+- The test suite also runs against Django 6.1.
+
+### Added
+
 - Add `extrakwargs` parameter to `{% icon %}` template tag allowing a mapping of attributes to be merged with direct kwargs (direct kwargs override collisions).
 
 ## [0.4.0] - 2025-12-03
