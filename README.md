@@ -312,13 +312,13 @@ Run the test suite:
 
 ```bash
 # Install dependencies
-poetry install
+uv sync
 
 # Run tests
-poetry run pytest
+uv run pytest
 
 # Run tests with coverage
-poetry run pytest --cov=easy_icons --cov-report=html
+uv run pytest --cov=easy_icons --cov-report=html
 ```
 
 ## Contributing

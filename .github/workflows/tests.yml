@@ -8,7 +8,7 @@ on:
       - 'easy_icons/**'
       - 'tests/**'
       - 'pyproject.toml'
-      - 'poetry.lock'
+      - 'uv.lock'
       - '.github/workflows/tests.yml'
   # No paths filter on pull_request: these checks are ruleset-required, and a
   # path-filtered required check never reports on out-of-scope PRs, blocking merge.
@@ -18,12 +18,7 @@ on:
 
 jobs:
   call-tests:
-    uses: django-mvp/shared/.github/workflows/tests.yml@v0.4.1
+    uses: django-mvp/shared/.github/workflows/tests.yml@v0.6.0
     with:
       coverage-package: easy_icons
-      django-versions: '["5.2", "6.0"]'
-      # easy_icons keeps its test/lint tooling in a single (non-optional) dev
-      # group rather than a separate `test` group, so the default `--with test`
-      # would fail. Empty args install main + dev + docs, which covers pytest.
-      poetry-install-args: ''
     secrets: inherit
