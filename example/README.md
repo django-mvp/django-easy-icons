@@ -47,7 +47,6 @@ EASY_ICONS = {
             "alt_dir": "../alt_dir/alt_dir.svg",
         },
     },
-
     # Font Awesome provider renderer
     "fontawesome": {
         "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -61,7 +60,6 @@ EASY_ICONS = {
             "admin": "fa-toolbox",
         },
     },
-
     # SVG sprite renderer (example)
     "sprites": {
         "renderer": "easy_icons.renderers.SpritesRenderer",

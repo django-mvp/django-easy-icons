@@ -1,32 +1,4 @@
-"""Main interface functions for django-easy-icons.
-
-This module provides the primary public API for the django-easy-icons package,
-including renderer management, caching, and the main icon() function used by
-both Python code and template tags.
-
-Functions:
-    get_renderer(name): Get a configured renderer instance by name
-    clear_cache(): Clear the renderer instance cache
-    build_icon_registry(): Build global icon->renderer lookup dict
-    icon(name, renderer, **kwargs): Render an icon using the specified or auto-detected renderer
-
-The icon() function is the main entry point for rendering icons and supports:
-- Automatic renderer detection based on icon name
-- Multiple configured renderers
-- Attribute merging and customization
-- Caching for performance
-- Integration with Django's SafeString for secure HTML output
-
-Example:
-    # Auto-detect renderer (searches default, then other renderers)
-    home_icon = icon("home")
-
-    # With custom attributes
-    user_icon = icon("user", **{"class": "large", "data-role": "button"})
-
-    # Using explicit renderer
-    fa_icon = icon("heart", renderer="fontawesome")
-"""
+"""The public API: icon rendering, renderer lookup and the icon registry."""
 
 import logging
 from typing import Any, cast
@@ -38,11 +10,10 @@ from django.utils.safestring import SafeString
 
 from .exceptions import IconNotFoundError
 
-# Simple module-level cache for renderer instances
 _renderer_cache: dict[str, Any] = {}
 
-# Global icon->renderer lookup dict (built at app startup)
-_icon_registry: dict[str, str] = {}  # {icon_name: renderer_name}
+# Icon name -> renderer name, built at app startup.
+_icon_registry: dict[str, str] = {}
 
 logger = logging.getLogger("easy_icons")
 
@@ -105,7 +76,6 @@ def resolve_icons(
     if packs_list:
         merged_icons = load_and_merge_packs(packs_list, renderer_name)
 
-    # Explicit icons always override pack icons.
     explicit_icons = renderer_config.get("icons", {}) or {}
     merged_icons.update(_expand_aliases(explicit_icons))
 
@@ -124,22 +94,18 @@ def load_and_merge_packs(packs_list: list[str], renderer_name: str) -> dict[str,
     allowing the application to continue functioning even if some packs fail to load.
 
     Args:
-        packs_list: List of dotted Python paths to icon pack dictionaries
-                   (e.g., ["mypackage.icons.FONTAWESOME", "other.icons.SVG"])
-        renderer_name: Name of the renderer (used for logging context)
+        packs_list: Dotted paths to icon pack dictionaries, such as
+            ``["mypackage.icons.FONTAWESOME"]``.
+        renderer_name: Name of the renderer, used in log messages.
 
     Returns:
-        Merged dictionary of all valid packs, where keys are icon names and
-        values are icon identifiers specific to the renderer type
+        The merged packs, mapping icon names to renderer-specific identifiers.
 
     Example:
         >>> packs = ["example.icons.PACK_ONE", "example.icons.PACK_TWO"]
         >>> icons = load_and_merge_packs(packs, "svg")
         >>> # Returns merged dict with PACK_TWO overriding PACK_ONE for any collisions
 
-    Note:
-        This function is called automatically by get_renderer() and build_icon_registry()
-        when processing the "packs" key in EASY_ICONS configuration.
     """
     merged_icons = {}
 
@@ -174,35 +140,32 @@ def load_and_merge_packs(packs_list: list[str], renderer_name: str) -> dict[str,
 
 
 def get_renderer(name: str = "default") -> Any:
-    """Get a configured renderer instance.
+    """Return the configured renderer instance, creating and caching it on first use.
 
     Args:
-        name: Name of the renderer to get (defaults to 'default')
+        name: The renderer's key in the ``EASY_ICONS`` setting.
 
     Returns:
-        Configured renderer instance
+        The renderer instance.
 
     Raises:
-        ImproperlyConfigured: If renderer is not configured or cannot be imported
+        ImproperlyConfigured: The renderer is missing from ``EASY_ICONS``, its
+            configuration is malformed, or its class cannot be imported or
+            instantiated.
     """
-    # Check cache first
     if name in _renderer_cache:
         return _renderer_cache[name]
 
-    # Get configuration from settings or use empty dict
     config = getattr(settings, "EASY_ICONS", {})
 
-    # Validate basic configuration structure
     if not isinstance(config, dict):
         raise ImproperlyConfigured("EASY_ICONS setting must be a dictionary")
 
-    # Ensure requested renderer exists
     if name not in config:
         raise ImproperlyConfigured(f"Renderer '{name}' is not configured in EASY_ICONS")
 
     renderer_config = config[name]
 
-    # Validate renderer configuration structure
     if not isinstance(renderer_config, dict):
         raise ImproperlyConfigured(f"EASY_ICONS['{name}'] must be a dictionary")
 
@@ -211,7 +174,6 @@ def get_renderer(name: str = "default") -> Any:
             f"EASY_ICONS['{name}'] must specify a 'renderer' class path"
         )
 
-    # Import and instantiate the renderer class
     renderer_class_path = renderer_config["renderer"]
 
     try:
@@ -221,13 +183,9 @@ def get_renderer(name: str = "default") -> Any:
             f"Cannot import renderer class '{renderer_class_path}': {e}"
         ) from e
 
-    # Extract configuration options
     renderer_kwargs = renderer_config.get("config", {}) or {}
-
-    # Resolve packs + explicit icons (with alias expansion) into one mapping.
     merged_icons = resolve_icons(renderer_config, name)
 
-    # Create instance
     try:
         renderer_instance = renderer_class(
             icons=merged_icons,
@@ -238,16 +196,12 @@ def get_renderer(name: str = "default") -> Any:
             f"Cannot instantiate renderer '{name}' with class '{renderer_class_path}': {e}"
         ) from e
 
-    # Cache the instance
     _renderer_cache[name] = renderer_instance
     return renderer_instance
 
 
 def clear_cache() -> None:
-    """Clear renderer cache.
-
-    Useful for testing and development when settings might change.
-    """
+    """Discard cached renderer instances, so the next lookup reads settings again."""
     _renderer_cache.clear()
 
 
@@ -268,39 +222,31 @@ def build_icon_registry() -> None:
     if not isinstance(config, dict):
         return
 
-    # Track collisions for logging
-    collisions: dict[str, list[str]] = {}  # {icon_name: [renderer_names]}
+    collisions: dict[str, list[str]] = {}
 
-    # Process 'default' renderer first if it exists
     renderers_to_process = []
     if "default" in config:
         renderers_to_process.append("default")
 
-    # Then add all other renderers in order
     for renderer_name in config:
         if renderer_name != "default" and not renderer_name.isupper():
             renderers_to_process.append(renderer_name)
 
-    # Build the registry
     for renderer_name in renderers_to_process:
         renderer_config = config[renderer_name]
         if not isinstance(renderer_config, dict):
             continue
 
-        # Resolve packs + explicit icons (with alias expansion) into one mapping.
         merged_icons = resolve_icons(renderer_config, renderer_name)
 
         for icon_name in merged_icons:
             if icon_name in _icon_registry:
-                # Collision - track it
                 if icon_name not in collisions:
                     collisions[icon_name] = [_icon_registry[icon_name]]
                 collisions[icon_name].append(renderer_name)
             else:
-                # First occurrence - register it
                 _icon_registry[icon_name] = renderer_name
 
-    # Log collisions as warnings
     for icon_name, renderer_list in collisions.items():
         logger.warning(
             f"Icon name collision: '{icon_name}' defined in multiple renderers: "
@@ -318,32 +264,29 @@ def icon(name: str, renderer: str | None = None, **kwargs: Any) -> SafeString | 
     4. If not found and EASY_ICONS_FAIL_SILENTLY is False, raise IconNotFoundError
 
     Args:
-        name: The icon name to render
-        renderer: Name of the renderer to use (auto-detects if None)
-        **kwargs: Additional attributes for the icon
+        name: The logical icon name.
+        renderer: The configured renderer to use. When omitted, the renderer
+            that registered ``name`` is used.
+        **kwargs: HTML attributes for the icon.
 
     Returns:
-        Safe HTML string containing the rendered icon, or empty string if not found
-        and fail_silently is True
+        The icon's markup, or an empty string when the icon is not found and
+        ``EASY_ICONS_FAIL_SILENTLY`` is true.
 
     Raises:
-        IconNotFoundError: If icon not found and EASY_ICONS_FAIL_SILENTLY is False
+        IconNotFoundError: The icon is not found and ``EASY_ICONS_FAIL_SILENTLY``
+            is false. The setting defaults to ``DEBUG``.
     """
-    # Get fail_silently setting (defaults to DEBUG)
     fail_silently = getattr(settings, "EASY_ICONS_FAIL_SILENTLY", settings.DEBUG)
 
-    # Auto-detect renderer if not explicitly provided
     if renderer is None:
-        # If registry is built (not empty), use it
         if _icon_registry:
             renderer = _icon_registry.get(name)
 
             if renderer is None:
-                # Icon not found in any renderer
                 if fail_silently:
                     return ""
 
-                # Provide helpful error message
                 available = sorted(_icon_registry.keys())
                 raise IconNotFoundError(
                     f"Icon '{name}' not found in any configured renderer. "
@@ -351,15 +294,13 @@ def icon(name: str, renderer: str | None = None, **kwargs: Any) -> SafeString | 
                     f"{' ...' if len(available) > 10 else ''}"
                 )
         else:
-            # Registry not built - fall back to 'default' for backwards compatibility
+            # The registry is empty before app startup; keep the pre-registry behaviour.
             renderer = "default"
 
-    # Render with the determined renderer
     try:
         renderer_instance = get_renderer(renderer)
         return cast(SafeString, renderer_instance(name, **kwargs))
     except IconNotFoundError:
-        # Icon not found in the specific renderer
         if fail_silently:
             return ""
         raise

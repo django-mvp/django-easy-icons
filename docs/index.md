@@ -72,7 +72,7 @@ usage-examples
 :caption: API reference
 :maxdepth: 1
 
-api/easy_icons/easy_icons
+api/index
 ```
 
 ```{toctree}

@@ -1,3 +1,5 @@
+"""Django app configuration for easy_icons."""
+
 from django.apps import AppConfig
 
 

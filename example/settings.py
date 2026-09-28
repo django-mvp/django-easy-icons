@@ -1,3 +1,5 @@
+"""Settings for the example project."""
+
 import os
 import sys
 from pathlib import Path

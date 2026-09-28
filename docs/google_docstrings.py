@@ -3,7 +3,9 @@
 from docutils.parsers.rst import Parser as RstParser
 from sphinx.ext.napoleon import Config, GoogleDocstring
 
-_CONFIG = Config(napoleon_use_param=True, napoleon_use_rtype=False)
+_CONFIG = Config(
+    napoleon_use_param=True, napoleon_use_rtype=False, napoleon_use_ivar=True
+)
 
 
 class Parser(RstParser):
