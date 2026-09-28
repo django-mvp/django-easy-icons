@@ -1,6 +1,6 @@
 # Django Easy Icons
 
-Easy, flexible icons for Django templates with support for multiple rendering backends.
+Easy, flexible icons for Django
 
 ## Overview
 
@@ -13,7 +13,7 @@ Django Easy Icons provides a simple, consistent way to include icons in your Dja
 - **Flexible Configuration**: Configure multiple icon sets with different renderers
 - **Attribute Merging**: Easily add classes and attributes to icons
 - **Caching**: Built-in renderer caching for performance
-- **Dict Attributes**: Pass a dict of extra attributes to the template tag via `extrakwargs`
+- **Dict Attributes**: Pass a dict of extra attributes to the template tag via `defaults`
 
 ## Scope & philosophy
 
@@ -85,10 +85,10 @@ EASY_ICONS = {
 {% icon "heart" renderer="fontawesome" %}
 
 <!-- Passing a dictionary of attributes (e.g. from another library) -->
-{% icon "user" extrakwargs=attr_dict %}
+{% icon "user" defaults=attr_dict %}
 
 <!-- Dictionary + explicit overrides (explicit wins) -->
-{% icon "user" extrakwargs=attr_dict class="avatar" %}
+{% icon "user" defaults=attr_dict class="avatar" %}
 ```
 
 ### 3. Use in Python Code
@@ -326,9 +326,10 @@ uv run pytest --cov=easy_icons --cov-report=html
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite
-6. Submit a pull request
+4. Add tests for new functionality, following the [testing standards](https://github.com/django-mvp/django-easy-icons/blob/main/docs/contributing/standards/testing.md)
+5. Document code as the [code documentation standards](https://github.com/django-mvp/django-easy-icons/blob/main/docs/contributing/standards/code-documentation.md) describe
+6. Run the test suite
+7. Submit a pull request
 
 ## License
 
@@ -336,4 +337,4 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for the full changelog.
+See [CHANGELOG.md](https://github.com/django-mvp/django-easy-icons/blob/main/CHANGELOG.md) for the full changelog.
