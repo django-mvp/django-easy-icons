@@ -152,27 +152,27 @@ Tests require:
 ```python
 def test_custom_renderer():
     renderer = ProviderRenderer(
-        tag="span",
-        icons={"home": "custom-home"},
-        default_attrs={"class": "icon"}
+        tag="span", icons={"home": "custom-home"}, default_attrs={"class": "icon"}
     )
 
     result = renderer.render("home", **{"class": "large"})
 
-    assert '<span' in result
-    assert 'custom-home' in result
-    assert 'icon large' in result
+    assert "<span" in result
+    assert "custom-home" in result
+    assert "icon large" in result
 ```
 
 ### Testing Configuration
 
 ```python
-@override_settings(EASY_ICONS={
-    "default": {
-        "renderer": "easy_icons.renderers.SvgRenderer",
-        "config": {"svg_dir": "icons"}
+@override_settings(
+    EASY_ICONS={
+        "default": {
+            "renderer": "easy_icons.renderers.SvgRenderer",
+            "config": {"svg_dir": "icons"},
+        }
     }
-})
+)
 def test_configuration():
     clear_config_cache()
     config = get_config()
@@ -185,7 +185,7 @@ def test_configuration():
 def test_template_tag():
     template = Template("{% load easy_icons %}{% icon 'home' class='nav' %}")
     result = template.render(Context())
-    assert 'nav' in result
+    assert "nav" in result
 ```
 
 ## Verification
