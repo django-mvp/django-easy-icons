@@ -10,10 +10,7 @@ from easy_icons.templatetags.easy_icons import icon
 
 
 class TestIconTemplateTag:
-    """Test cases for the icon template tag."""
-
     def test_icon_tag_basic(self):
-        """Test basic icon template tag usage."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -29,7 +26,6 @@ class TestIconTemplateTag:
             assert '<i class="fa-home"' in result
 
     def test_icon_tag_with_renderer(self):
-        """Test icon template tag with explicit renderer."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -50,7 +46,6 @@ class TestIconTemplateTag:
             assert '<i class="fa-heart"' in result
 
     def test_icon_tag_with_attributes(self):
-        """Test icon template tag with additional attributes."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -70,7 +65,6 @@ class TestIconTemplateTag:
             assert 'data-role="button"' in result
 
     def test_icon_tag_in_template(self):
-        """Test icon template tag within Django template."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -88,7 +82,6 @@ class TestIconTemplateTag:
             assert '<span class="fa-bookmark"' in result
 
     def test_icon_tag_in_template_with_variables(self):
-        """Test icon template tag with template variables."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -107,7 +100,6 @@ class TestIconTemplateTag:
             assert 'class="fa-user active"' in result
 
     def test_icon_tag_with_quoted_attributes(self):
-        """Test icon template tag with quoted attribute values."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -126,7 +118,6 @@ class TestIconTemplateTag:
             assert 'title="Settings Menu"' in result
 
     def test_icon_tag_with_renderer_parameter(self):
-        """Test icon template tag with renderer parameter in template."""
         config = {
             "svg": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -154,7 +145,6 @@ class TestIconTemplateTag:
                 assert '<i class="fa-home"' in result
 
     def test_icon_tag_default_renderer_parameter(self):
-        """Test that icon template tag defaults to 'default' renderer."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -176,7 +166,6 @@ class TestIconTemplateTag:
             assert '<i class="fa-heart"' in result2
 
     def test_icon_tag_with_boolean_attributes(self):
-        """Test icon template tag with boolean attributes."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -198,7 +187,6 @@ class TestIconTemplateTag:
             assert "disabled" not in result or 'disabled=""' in result
 
     def test_icon_tag_with_context_variables(self):
-        """Test icon template tag with various context variable types."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -219,7 +207,6 @@ class TestIconTemplateTag:
             assert 'class="fa-arrow rotate-90 blue"' in result
 
     def test_icon_tag_loads_correctly(self):
-        """Test that the easy_icons templatetags library loads correctly."""
         template_content = "{% load easy_icons %}Loaded successfully"
 
         template = Template(template_content)
@@ -228,7 +215,6 @@ class TestIconTemplateTag:
         assert "Loaded successfully" in result
 
     def test_icon_tag_multiple_in_template(self):
-        """Test multiple icon tags in same template."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -253,7 +239,6 @@ class TestIconTemplateTag:
             assert 'class="fa-cog admin"' in result
 
     def test_icon_tag_with_defaults_dict(self):
-        """Test icon template tag with defaults dictionary."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -272,7 +257,6 @@ class TestIconTemplateTag:
             assert 'data-test="value"' in result
 
     def test_icon_tag_defaults_with_kwargs_override(self):
-        """Test that kwargs override defaults dictionary values."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -293,7 +277,6 @@ class TestIconTemplateTag:
             assert 'title="Default Title"' in result
 
     def test_icon_tag_defaults_in_template(self):
-        """Test icon template tag with defaults parameter in Django template."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -317,7 +300,6 @@ class TestIconTemplateTag:
             assert 'data-role="button"' in result
 
     def test_icon_tag_defaults_with_template_attributes(self):
-        """Test defaults with additional template attributes."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -341,7 +323,6 @@ class TestIconTemplateTag:
             assert 'data-id="123"' in result
 
     def test_icon_tag_empty_defaults_dict(self):
-        """Test icon template tag with empty defaults dictionary."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -357,7 +338,6 @@ class TestIconTemplateTag:
             assert '<i class="fa-home"' in result
 
     def test_icon_tag_none_defaults(self):
-        """Test icon template tag with None defaults parameter."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -373,7 +353,6 @@ class TestIconTemplateTag:
             assert '<i class="fa-home"' in result
 
     def test_icon_tag_defaults_with_multiple_renderers(self):
-        """Test defaults parameter works with different renderers."""
         config = {
             "fontawesome": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",

@@ -46,14 +46,10 @@ INVALID_PACK = ["not", "a", "dictionary"]
 
 
 class TestGetRenderer:
-    """Test cases for the get_renderer function."""
-
     def setup_method(self):
-        """Clear cache before each test."""
         utils.clear_cache()
 
     def test_get_renderer_default(self):
-        """Test getting default renderer."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -70,7 +66,6 @@ class TestGetRenderer:
             assert renderer.icons == {"home": "home.svg"}
 
     def test_get_renderer_named(self):
-        """Test getting named renderer."""
         config = {
             "fontawesome": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -87,7 +82,6 @@ class TestGetRenderer:
             assert renderer.icons == {"heart": "fa-heart"}
 
     def test_get_renderer_caching(self):
-        """Test that renderers are cached."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -103,7 +97,6 @@ class TestGetRenderer:
             assert renderer1 is renderer2  # Same instance
 
     def test_get_renderer_no_easy_icons_setting(self):
-        """Test get_renderer with no EASY_ICONS setting."""
         # Test with completely missing EASY_ICONS setting (empty dict behavior)
         with override_settings(EASY_ICONS={}):
             with pytest.raises(ImproperlyConfigured) as exc_info:
@@ -112,7 +105,6 @@ class TestGetRenderer:
             assert "Renderer 'default' is not configured" in str(exc_info.value)
 
     def test_get_renderer_invalid_setting_type(self):
-        """Test get_renderer with invalid EASY_ICONS setting type."""
         with override_settings(EASY_ICONS="not a dict"):
             with pytest.raises(ImproperlyConfigured) as exc_info:
                 utils.get_renderer()
@@ -120,7 +112,6 @@ class TestGetRenderer:
             assert "EASY_ICONS setting must be a dictionary" in str(exc_info.value)
 
     def test_get_renderer_missing_renderer_config(self):
-        """Test get_renderer with missing renderer in config."""
         config = {
             "other": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -136,7 +127,6 @@ class TestGetRenderer:
             assert "Renderer 'missing' is not configured" in str(exc_info.value)
 
     def test_get_renderer_invalid_renderer_config_type(self):
-        """Test get_renderer with invalid renderer config type."""
         config = {"default": "not a dict"}
 
         with override_settings(EASY_ICONS=config):
@@ -146,7 +136,6 @@ class TestGetRenderer:
             assert "EASY_ICONS['default'] must be a dictionary" in str(exc_info.value)
 
     def test_get_renderer_missing_renderer_class(self):
-        """Test get_renderer with missing renderer class path."""
         config = {"default": {"config": {}, "icons": {}}}
 
         with override_settings(EASY_ICONS=config):
@@ -156,7 +145,6 @@ class TestGetRenderer:
             assert "must specify a 'renderer' class path" in str(exc_info.value)
 
     def test_get_renderer_invalid_renderer_class(self):
-        """Test get_renderer with invalid renderer class path."""
         config = {
             "default": {
                 "renderer": "nonexistent.module.RendererClass",
@@ -172,7 +160,6 @@ class TestGetRenderer:
             assert "Cannot import renderer class" in str(exc_info.value)
 
     def test_get_renderer_renderer_instantiation_error(self):
-        """Test get_renderer with renderer instantiation error."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.SpritesRenderer",
@@ -188,7 +175,6 @@ class TestGetRenderer:
             assert "Cannot instantiate renderer" in str(exc_info.value)
 
     def test_get_renderer_config_none(self):
-        """Test get_renderer with None config values."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -204,7 +190,6 @@ class TestGetRenderer:
             assert renderer.icons == {}
 
     def test_get_renderer_missing_config_and_icons(self):
-        """Test get_renderer with missing config and icons sections."""
         config = {"default": {"renderer": "easy_icons.renderers.SvgRenderer"}}
 
         with override_settings(EASY_ICONS=config):
@@ -215,7 +200,6 @@ class TestGetRenderer:
             assert renderer.default_attrs == {}
 
     def test_get_renderer_complex_config(self):
-        """Test get_renderer with complex configuration."""
         config = {
             "sprites": {
                 "renderer": "easy_icons.renderers.SpritesRenderer",
@@ -237,10 +221,7 @@ class TestGetRenderer:
 
 
 class TestClearCache:
-    """Test cases for the clear_cache function."""
-
     def test_clear_cache(self):
-        """Test that clear_cache clears the renderer cache."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -262,16 +243,12 @@ class TestClearCache:
             assert renderer1 is not renderer2
 
     def test_clear_cache_empty(self):
-        """Test clearing cache when it's already empty."""
         utils.clear_cache()
         utils.clear_cache()
 
 
 class TestIcon:
-    """Test cases for the icon function."""
-
     def test_icon_default_renderer(self):
-        """Test icon function with default renderer."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -290,7 +267,6 @@ class TestIcon:
                 mock_render.assert_called_once_with("icons/home.svg")
 
     def test_icon_named_renderer(self):
-        """Test icon function with named renderer."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -311,7 +287,6 @@ class TestIcon:
             assert '<i class="fa-heart"' in result
 
     def test_icon_with_attributes(self):
-        """Test icon function with additional attributes."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -328,7 +303,6 @@ class TestIcon:
             assert 'data-role="button"' in result
 
     def test_icon_use_defaults_false(self):
-        """Test icon function with use_defaults=False."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -346,7 +320,6 @@ class TestIcon:
             assert 'class="icon' not in result
 
     def test_icon_renderer_not_found(self):
-        """Test icon function with non-existent renderer."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -359,7 +332,6 @@ class TestIcon:
             utils.icon("test", renderer="nonexistent")
 
     def test_icon_caching_across_calls(self):
-        """Test that icon function uses cached renderers."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -377,7 +349,6 @@ class TestIcon:
             assert "fa-user" in result2
 
     def test_icon_multiple_renderers(self):
-        """Test icon function with multiple configured renderers."""
         config = {
             "svg": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -410,18 +381,13 @@ class TestIcon:
 
 
 class TestExpandAliases:
-    """Unit tests for the low-level ``_expand_aliases`` helper."""
-
     def test_key_without_comma_unchanged(self):
-        """A plain key is copied through untouched."""
         assert utils._expand_aliases({"home": "home.svg"}) == {"home": "home.svg"}
 
     def test_empty_mapping(self):
-        """An empty mapping expands to an empty mapping."""
         assert utils._expand_aliases({}) == {}
 
     def test_comma_key_expands_to_each_alias(self):
-        """Every comma-separated alias maps to the shared value."""
         result = utils._expand_aliases({"plus,create,add,new": "bi bi-plus"})
         assert result == {
             "plus": "bi bi-plus",
@@ -431,7 +397,6 @@ class TestExpandAliases:
         }
 
     def test_whitespace_around_aliases_is_stripped(self):
-        """Surrounding whitespace on each alias is ignored."""
         result = utils._expand_aliases({" plus , create ,add ": "bi bi-plus"})
         assert result == {
             "plus": "bi bi-plus",
@@ -440,12 +405,10 @@ class TestExpandAliases:
         }
 
     def test_empty_aliases_are_dropped(self):
-        """Blank tokens from stray/trailing commas are discarded."""
         result = utils._expand_aliases({"plus,,create,": "bi bi-plus"})
         assert result == {"plus": "bi bi-plus", "create": "bi bi-plus"}
 
     def test_mixed_plain_and_alias_keys(self):
-        """Plain and aliased keys coexist in one mapping."""
         result = utils._expand_aliases({"home": "home.svg", "plus,add": "plus.svg"})
         assert result == {
             "home": "home.svg",
@@ -455,10 +418,7 @@ class TestExpandAliases:
 
 
 class TestResolveIconsWithAliases:
-    """Alias behaviour through the ``resolve_icons`` merge path."""
-
     def test_explicit_icons_aliases_expanded(self):
-        """Aliases declared in explicit ``icons`` are expanded."""
         config = {"icons": {"plus,create,add": "bi bi-plus"}}
         resolved = utils.resolve_icons(config, "default")
         assert resolved["plus"] == "bi bi-plus"
@@ -466,7 +426,6 @@ class TestResolveIconsWithAliases:
         assert resolved["add"] == "bi bi-plus"
 
     def test_pack_aliases_expanded(self):
-        """Aliases declared inside a pack are expanded."""
         config = {"packs": ["tests.test_utils.PACK_WITH_ALIASES"]}
         resolved = utils.resolve_icons(config, "default")
         assert resolved["plus"] == "pack-plus"
@@ -475,12 +434,6 @@ class TestResolveIconsWithAliases:
         assert resolved["home"] == "pack-home"
 
     def test_explicit_alias_overrides_pack_per_name(self):
-        """Explicit icons override pack values at the individual-name level.
-
-        The pack aliases ``plus``/``create``/``add`` to ``pack-plus``; the
-        explicit config re-aliases only ``add``/``remove``. ``add`` must take
-        the explicit value while the untouched pack aliases survive.
-        """
         config = {
             "packs": ["tests.test_utils.PACK_WITH_ALIASES"],
             "icons": {"add,remove": "explicit-value"},
@@ -493,8 +446,6 @@ class TestResolveIconsWithAliases:
 
 
 class TestAliasesEndToEnd:
-    """Aliases resolve through the public renderer and registry paths."""
-
     def _config(self):
         return {
             "default": {
@@ -505,21 +456,18 @@ class TestAliasesEndToEnd:
         }
 
     def test_get_renderer_resolves_every_alias(self):
-        """A renderer instance resolves each alias to the same identifier."""
         with override_settings(EASY_ICONS=self._config()):
             renderer = utils.get_renderer("default")
             for alias in ("plus", "create", "add", "new"):
                 assert renderer.get_icon(alias) == "bi bi-plus"
 
     def test_registry_registers_every_alias(self):
-        """The auto-detection registry indexes each alias name."""
         with override_settings(EASY_ICONS=self._config()):
             utils.build_icon_registry()
             for alias in ("plus", "create", "add", "new"):
                 assert utils._icon_registry.get(alias) == "default"
 
     def test_icon_renders_via_any_alias(self):
-        """The public ``icon()`` helper renders through any alias."""
         with override_settings(EASY_ICONS=self._config()):
             utils.build_icon_registry()
             html_plus = utils.icon("plus")
@@ -529,17 +477,13 @@ class TestAliasesEndToEnd:
 
 
 class TestPackLoading:
-    """Test basic pack loading functionality."""
-
     def test_load_single_pack(self):
-        """Test loading a single pack."""
         result = utils.load_and_merge_packs(
             ["tests.test_utils.PACK_ONE"], "test_renderer"
         )
         assert result == PACK_ONE
 
     def test_load_multiple_packs_last_wins(self):
-        """Test that later packs override earlier packs."""
         result = utils.load_and_merge_packs(
             [
                 "tests.test_utils.PACK_ONE",
@@ -557,7 +501,6 @@ class TestPackLoading:
         assert result["heart"] == "heart-v2.svg"
 
     def test_load_three_packs_sequential_override(self):
-        """Test that three packs merge with proper precedence."""
         result = utils.load_and_merge_packs(
             [
                 "tests.test_utils.PACK_ONE",
@@ -578,7 +521,6 @@ class TestPackLoading:
         assert result["admin"] == "admin-v3.svg"
 
     def test_load_invalid_import_path(self, caplog):
-        """Test that invalid import paths log warnings and are skipped."""
         result = utils.load_and_merge_packs(
             [
                 "tests.test_utils.PACK_ONE",
@@ -594,7 +536,6 @@ class TestPackLoading:
         assert "NONEXISTENT_PACK" in caplog.text
 
     def test_load_non_dict_pack(self, caplog):
-        """Test that non-dict packs log warnings and are skipped."""
         result = utils.load_and_merge_packs(
             [
                 "tests.test_utils.PACK_ONE",
@@ -610,20 +551,15 @@ class TestPackLoading:
         assert "INVALID_PACK" in caplog.text
 
     def test_load_empty_packs_list(self):
-        """Test that empty packs list returns empty dict."""
         result = utils.load_and_merge_packs([], "test_renderer")
         assert result == {}
 
 
 class TestPacksInRendererConfig:
-    """Test packs configuration in EASY_ICONS renderer settings."""
-
     def setup_method(self):
-        """Clear cache before each test."""
         utils.clear_cache()
 
     def test_renderer_with_single_pack(self):
-        """Test renderer loads icons from single pack."""
         config = {
             "test": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -637,7 +573,6 @@ class TestPacksInRendererConfig:
             assert renderer.icons == PACK_ONE
 
     def test_renderer_with_multiple_packs(self):
-        """Test renderer merges multiple packs with last-wins."""
         with override_settings(
             EASY_ICONS={
                 "test": {
@@ -658,7 +593,6 @@ class TestPacksInRendererConfig:
             assert renderer.icons["heart"] == "heart-v2.svg"
 
     def test_explicit_icons_override_packs(self):
-        """Test that explicit icons in 'icons' key override pack values."""
         with override_settings(
             EASY_ICONS={
                 "test": {
@@ -685,7 +619,6 @@ class TestPacksInRendererConfig:
             assert renderer.icons["custom"] == "custom.svg"
 
     def test_renderer_without_packs_key(self):
-        """Test renderer works without 'packs' key (backwards compatible)."""
         with override_settings(
             EASY_ICONS={
                 "test": {
@@ -701,7 +634,6 @@ class TestPacksInRendererConfig:
             assert renderer.icons == {"only": "explicit.svg"}
 
     def test_renderer_with_empty_packs_list(self):
-        """Test renderer with empty packs list."""
         with override_settings(
             EASY_ICONS={
                 "test": {
@@ -717,14 +649,10 @@ class TestPacksInRendererConfig:
 
 
 class TestIconRegistryWithPacks:
-    """Test icon registry building with packs."""
-
     def setup_method(self):
-        """Clear cache before each test."""
         utils.clear_cache()
 
     def test_registry_builds_with_packs(self):
-        """Test that icon registry includes pack icons."""
         with override_settings(
             EASY_ICONS={
                 "svg": {
@@ -742,7 +670,6 @@ class TestIconRegistryWithPacks:
             assert utils._icon_registry["star"] == "svg"
 
     def test_registry_with_multiple_renderers_and_packs(self):
-        """Test registry with multiple renderers each having packs."""
         with override_settings(
             EASY_ICONS={
                 "svg": {
@@ -767,7 +694,6 @@ class TestIconRegistryWithPacks:
             assert utils._icon_registry["heart"] == "fontawesome"
 
     def test_registry_respects_explicit_icon_precedence(self):
-        """Test that explicit icons override pack icons in registry."""
         with override_settings(
             EASY_ICONS={
                 "svg": {
@@ -792,7 +718,6 @@ class TestIconRegistryWithPacks:
             assert renderer.icons["home"] == "home-v1.svg"
 
     def test_default_renderer_wins_collisions(self, caplog):
-        """Test that 'default' renderer has priority in collisions."""
         with override_settings(
             EASY_ICONS={
                 "default": {
@@ -818,14 +743,10 @@ class TestIconRegistryWithPacks:
 
 
 class TestIconRenderingWithPacks:
-    """Test actual icon rendering using packs."""
-
     def setup_method(self):
-        """Clear cache before each test."""
         utils.clear_cache()
 
     def test_render_icon_from_pack(self):
-        """Test rendering an icon defined in a pack."""
         with override_settings(
             EASY_ICONS={
                 "default": {
@@ -846,7 +767,6 @@ class TestIconRenderingWithPacks:
             assert renderer.icons["home"] == "home-v1.svg"
 
     def test_explicit_icon_renders_over_pack(self):
-        """Test that explicit icon definition is used for rendering."""
         with override_settings(
             EASY_ICONS={
                 "fontawesome": {
@@ -869,14 +789,10 @@ class TestIconRenderingWithPacks:
 
 
 class TestPacksEdgeCases:
-    """Test edge cases and error handling."""
-
     def setup_method(self):
-        """Clear cache before each test."""
         utils.clear_cache()
 
     def test_all_packs_invalid_uses_explicit_icons(self, caplog):
-        """Test that if all packs fail, explicit icons still work."""
         with override_settings(
             EASY_ICONS={
                 "test": {
@@ -896,7 +812,6 @@ class TestPacksEdgeCases:
             assert any(record.levelname == "WARNING" for record in caplog.records)
 
     def test_duplicate_pack_paths(self):
-        """Test that duplicate pack paths work (just reload same data)."""
         with override_settings(
             EASY_ICONS={
                 "test": {
@@ -915,7 +830,6 @@ class TestPacksEdgeCases:
             assert renderer.icons == PACK_ONE
 
     def test_explicit_icons_override_all_packs(self):
-        """Test that explicit icons override all pack definitions."""
         with override_settings(
             EASY_ICONS={
                 "test": {
@@ -946,15 +860,11 @@ class TestPacksEdgeCases:
 
 
 class TestIconRegistry:
-    """Test cases for the icon registry auto-detection system."""
-
     def setup_method(self):
-        """Clear caches before each test."""
         utils.clear_cache()
         utils._icon_registry.clear()
 
     def test_build_icon_registry_default_first(self):
-        """Test that 'default' renderer is processed first."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -985,7 +895,6 @@ class TestIconRegistry:
             assert utils._icon_registry.get("heart") == "fontawesome"
 
     def test_build_icon_registry_order_matters(self):
-        """Test that renderer order matters for collisions."""
         config = {
             "renderer_a": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1006,7 +915,6 @@ class TestIconRegistry:
             assert utils._icon_registry.get("duplicate") == "renderer_a"
 
     def test_build_icon_registry_skips_uppercase_keys(self):
-        """Test that uppercase config keys are skipped."""
         config = {
             "SOME_CONFIG": True,
             "default": {
@@ -1023,7 +931,6 @@ class TestIconRegistry:
             assert "SOME_CONFIG" not in utils._icon_registry
 
     def test_build_icon_registry_handles_invalid_config(self):
-        """Test that invalid renderer configs are skipped gracefully."""
         config = {
             "invalid": "not a dict",
             "default": {
@@ -1040,7 +947,6 @@ class TestIconRegistry:
             assert utils._icon_registry.get("home") == "default"
 
     def test_build_icon_registry_collision_logging(self, caplog):
-        """Test that icon collisions are logged as warnings."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -1063,15 +969,11 @@ class TestIconRegistry:
 
 
 class TestIconAutoDetection:
-    """Test cases for automatic renderer detection."""
-
     def setup_method(self):
-        """Clear caches before each test."""
         utils.clear_cache()
         utils._icon_registry.clear()
 
     def test_icon_auto_detection_from_default(self):
-        """Test auto-detecting icon from default renderer."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1090,7 +992,6 @@ class TestIconAutoDetection:
             assert "<i" in result
 
     def test_icon_auto_detection_from_non_default(self):
-        """Test auto-detecting icon from non-default renderer."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1114,7 +1015,6 @@ class TestIconAutoDetection:
             assert "<svg" in result
 
     def test_icon_explicit_renderer_overrides_auto_detection(self):
-        """Test that explicit renderer parameter overrides auto-detection."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1143,15 +1043,11 @@ class TestIconAutoDetection:
 
 
 class TestIconFailSilently:
-    """Test cases for EASY_ICONS_FAIL_SILENTLY setting."""
-
     def setup_method(self):
-        """Clear caches before each test."""
         utils.clear_cache()
         utils._icon_registry.clear()
 
     def test_fail_silently_true_returns_empty_string(self):
-        """Test that missing icons return empty string when fail_silently=True."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1167,7 +1063,6 @@ class TestIconFailSilently:
             assert result == ""
 
     def test_fail_silently_false_raises_error(self):
-        """Test that missing icons raise error when fail_silently=False."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1187,7 +1082,6 @@ class TestIconFailSilently:
             assert "missing-icon" in str(exc_info.value)
 
     def test_fail_silently_defaults_to_debug(self):
-        """Test that fail_silently defaults to DEBUG setting."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1209,7 +1103,6 @@ class TestIconFailSilently:
                 utils.icon("missing-icon")
 
     def test_fail_silently_with_explicit_renderer_not_found(self):
-        """Test fail_silently when icon not found in explicit renderer."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1226,7 +1119,6 @@ class TestIconFailSilently:
             assert result == ""
 
     def test_helpful_error_message_lists_available_icons(self):
-        """Test that error message includes available icons."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1253,15 +1145,11 @@ class TestIconFailSilently:
 
 
 class TestIconRegistryWithNoDefault:
-    """Test cases for icon registry when no 'default' renderer exists."""
-
     def setup_method(self):
-        """Clear caches before each test."""
         utils.clear_cache()
         utils._icon_registry.clear()
 
     def test_registry_works_without_default_renderer(self):
-        """Test that registry works when no 'default' renderer is configured."""
         config = {
             "fontawesome": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1288,7 +1176,6 @@ class TestIconRegistryWithNoDefault:
             assert "brand-logo" in logo_result
 
     def test_first_renderer_wins_without_default(self):
-        """Test that first renderer wins when there's no default."""
         config = {
             "renderer_a": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1312,14 +1199,10 @@ class TestIconRegistryWithNoDefault:
 
 
 class TestMultiRendererIntegration:
-    """Integration tests using multiple renderers together."""
-
     def setup_method(self):
-        """Clear cache before each test."""
         clear_cache()
 
     def test_multiple_renderers_in_same_template(self):
-        """Test using multiple renderers in the same template."""
         config = {
             "svg": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -1361,7 +1244,6 @@ class TestMultiRendererIntegration:
                 assert '<use href="/static/icons.svg#brand-logo"' in result  # Sprites
 
     def test_icon_function_with_different_renderers(self):
-        """Test the icon function with different renderers."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1385,7 +1267,6 @@ class TestMultiRendererIntegration:
             assert "gear-icon" in result2 and 'class="icon"' in result2
 
     def test_renderer_caching_with_multiple_calls(self):
-        """Test that renderer caching works correctly across multiple calls."""
         config = {
             "provider1": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1410,7 +1291,6 @@ class TestMultiRendererIntegration:
             assert '<span class="span-icon3"' in result3
 
     def test_complex_configuration_integration(self):
-        """Test integration with complex configuration scenarios."""
         config = {
             "main": {
                 "renderer": "easy_icons.renderers.SvgRenderer",
@@ -1466,7 +1346,6 @@ class TestMultiRendererIntegration:
                 assert "fa-facebook" in fb_result and "fab" in fb_result
 
     def test_error_handling_integration(self):
-        """Test error handling across different scenarios."""
         config = {
             "test": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1493,7 +1372,6 @@ class TestMultiRendererIntegration:
                 easy_icon("valid", renderer="nonexistent")
 
     def test_template_integration_with_context(self):
-        """Test template integration with dynamic context variables."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",
@@ -1560,7 +1438,6 @@ class TestMultiRendererIntegration:
             assert "nav-link admin" in result
 
     def test_attribute_merging_edge_cases(self):
-        """Test attribute merging in various edge cases."""
         config = {
             "default": {
                 "renderer": "easy_icons.renderers.ProviderRenderer",

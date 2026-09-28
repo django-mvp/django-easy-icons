@@ -11,20 +11,15 @@ from easy_icons.renderers import ProviderRenderer, SpritesRenderer, SvgRenderer
 
 
 class TestSvgRenderer:
-    """Test cases for the SvgRenderer class."""
-
     def test_init_default_svg_dir(self):
-        """Test SvgRenderer initialization with default svg_dir."""
         renderer = SvgRenderer()
         assert renderer.svg_dir == "icons"
 
     def test_init_custom_svg_dir(self):
-        """Test SvgRenderer initialization with custom svg_dir."""
         renderer = SvgRenderer(svg_dir="custom/icons")
         assert renderer.svg_dir == "custom/icons"
 
     def test_init_with_icons_and_attrs(self):
-        """Test SvgRenderer initialization with icons and default_attrs."""
         icons = {"home": "house.svg", "user": "profile.svg"}
         default_attrs = {"class": "svg-icon", "height": "24px"}
         renderer = SvgRenderer(
@@ -37,7 +32,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_render_basic(self, mock_render):
-        """Test basic SVG rendering."""
         mock_render.return_value = '<svg><path d="M0 0L10 10"/></svg>'
         icons = {"home": "home.svg"}
         renderer = SvgRenderer(icons=icons)
@@ -50,7 +44,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_render_with_custom_svg_dir(self, mock_render):
-        """Test SVG rendering with custom svg_dir."""
         mock_render.return_value = '<svg><path d="M0 0L10 10"/></svg>'
         icons = {"logo": "brand.svg"}
         renderer = SvgRenderer(svg_dir="assets/graphics", icons=icons)
@@ -61,7 +54,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_render_with_attributes(self, mock_render):
-        """Test SVG rendering with additional attributes."""
         mock_render.return_value = (
             '<svg viewBox="0 0 24 24"><path d="M0 0L10 10"/></svg>'
         )
@@ -75,7 +67,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_render_with_default_attrs(self, mock_render):
-        """Test SVG rendering with default attributes."""
         mock_render.return_value = '<svg><path d="M0 0L10 10"/></svg>'
         icons = {"heart": "heart.svg"}
         default_attrs = {"class": "icon", "fill": "currentColor"}
@@ -88,7 +79,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_render_merge_attributes(self, mock_render):
-        """Test SVG rendering overriding default attributes."""
         mock_render.return_value = '<svg><path d="M0 0L10 10"/></svg>'
         icons = {"settings": "cog.svg"}
         default_attrs = {"class": "icon", "height": "1em"}
@@ -101,7 +91,6 @@ class TestSvgRenderer:
         assert 'width="2em"' in result
 
     def test_render_missing_icon(self):
-        """Test rendering raises error for missing icon."""
         renderer = SvgRenderer(icons={"home": "home.svg"})
 
         with pytest.raises(IconNotFoundError):
@@ -109,7 +98,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_inject_svg_attrs_basic(self, mock_render):
-        """Test _inject_svg_attrs with basic SVG content."""
         svg_content = '<svg viewBox="0 0 24 24"><path d="M0 0L10 10"/></svg>'
         icons = {"test": "test.svg"}
         renderer = SvgRenderer(icons=icons)
@@ -121,7 +109,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_inject_svg_attrs_with_existing_attrs(self, mock_render):
-        """Test _inject_svg_attrs preserves existing SVG attributes."""
         svg_content = '<svg class="existing" width="16"><path d="M0 0L10 10"/></svg>'
         icons = {"test": "test.svg"}
         renderer = SvgRenderer(icons=icons)
@@ -133,7 +120,6 @@ class TestSvgRenderer:
         assert 'width="16"' in result  # Should preserve existing
 
     def test_inject_svg_attrs_no_svg_tag(self):
-        """Test _inject_svg_attrs raises error when no SVG tag found."""
         content = "<div>Not an SVG</div>"
         renderer = SvgRenderer()
 
@@ -145,7 +131,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_inject_svg_attrs_no_attributes(self, mock_render):
-        """Test _inject_svg_attrs with no attributes to inject."""
         svg_content = '<svg><path d="M0 0L10 10"/></svg>'
         icons = {"test": "test.svg"}
         renderer = SvgRenderer(icons=icons)
@@ -157,7 +142,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_inject_svg_attrs_complex_svg(self, mock_render):
-        """Test _inject_svg_attrs with complex SVG structure."""
         svg_content = """<svg
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
@@ -175,7 +159,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_render_use_defaults_false(self, mock_render):
-        """Test rendering without default attributes."""
         mock_render.return_value = '<svg><path d="M0 0L10 10"/></svg>'
         icons = {"home": "home.svg"}
         default_attrs = {"class": "icon", "height": "1em"}
@@ -188,7 +171,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_callable_interface(self, mock_render):
-        """Test that SvgRenderer instances are callable."""
         mock_render.return_value = '<svg><path d="M0 0L10 10"/></svg>'
         icons = {"home": "home.svg"}
         renderer = SvgRenderer(icons=icons)
@@ -200,7 +182,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_render_template_does_not_exist(self, mock_render):
-        """Test handling of template not found errors."""
         mock_render.side_effect = TemplateDoesNotExist("icons/missing.svg")
         icons = {"test": "missing.svg"}
         renderer = SvgRenderer(icons=icons)
@@ -210,7 +191,6 @@ class TestSvgRenderer:
 
     @patch("easy_icons.renderers.render_to_string")
     def test_render_multiline_svg(self, mock_render):
-        """Test rendering with multiline SVG content."""
         svg_content = """<svg viewBox="0 0 24 24">
     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
     <circle cx="12" cy="12" r="2"/>
@@ -228,20 +208,15 @@ class TestSvgRenderer:
 
 
 class TestProviderRenderer:
-    """Test cases for the ProviderRenderer class."""
-
     def test_init_default_tag(self):
-        """Test ProviderRenderer initialization with default tag."""
         renderer = ProviderRenderer()
         assert renderer.tag == "i"
 
     def test_init_custom_tag(self):
-        """Test ProviderRenderer initialization with custom tag."""
         renderer = ProviderRenderer(tag="span")
         assert renderer.tag == "span"
 
     def test_init_with_icons_and_attrs(self):
-        """Test ProviderRenderer initialization with icons and default_attrs."""
         icons = {"home": "fa-home", "user": "fa-user"}
         default_attrs = {"class": "icon"}
         renderer = ProviderRenderer(
@@ -253,7 +228,6 @@ class TestProviderRenderer:
         assert renderer.default_attrs == default_attrs
 
     def test_render_basic(self):
-        """Test basic provider icon rendering."""
         icons = {"home": "fa-home"}
         renderer = ProviderRenderer(icons=icons)
 
@@ -264,7 +238,6 @@ class TestProviderRenderer:
         assert "</i>" in result
 
     def test_render_custom_tag(self):
-        """Test provider icon rendering with custom tag."""
         icons = {"star": "fa-star"}
         renderer = ProviderRenderer(tag="span", icons=icons)
 
@@ -274,7 +247,6 @@ class TestProviderRenderer:
         assert "</span>" in result
 
     def test_render_with_custom_class(self):
-        """Test provider icon rendering with additional class."""
         icons = {"heart": "fa-heart"}
         renderer = ProviderRenderer(icons=icons)
 
@@ -286,7 +258,6 @@ class TestProviderRenderer:
         )
 
     def test_render_with_attributes(self):
-        """Test provider icon rendering with additional attributes."""
         icons = {"user": "fa-user"}
         renderer = ProviderRenderer(icons=icons)
 
@@ -297,7 +268,6 @@ class TestProviderRenderer:
         assert '<i class="fa-user"' in result
 
     def test_render_with_default_attrs(self):
-        """Test provider icon rendering with default attributes."""
         icons = {"settings": "fa-cog"}
         default_attrs = {"class": "icon", "aria-hidden": "true"}
         renderer = ProviderRenderer(icons=icons, default_attrs=default_attrs)
@@ -309,7 +279,6 @@ class TestProviderRenderer:
         assert "fa-cog" in result
 
     def test_render_merge_classes(self):
-        """Test provider icon rendering merging default and custom classes."""
         icons = {"menu": "fa-bars"}
         default_attrs = {"class": "icon"}
         renderer = ProviderRenderer(icons=icons, default_attrs=default_attrs)
@@ -322,7 +291,6 @@ class TestProviderRenderer:
         assert "icon" in result  # from default attrs
 
     def test_render_override_attributes(self):
-        """Test provider icon rendering overriding default attributes."""
         icons = {"close": "fa-times"}
         default_attrs = {"class": "icon", "title": "default"}
         renderer = ProviderRenderer(icons=icons, default_attrs=default_attrs)
@@ -334,14 +302,12 @@ class TestProviderRenderer:
         assert 'title="Close Dialog"' in result
 
     def test_render_missing_icon(self):
-        """Test rendering raises error for missing icon."""
         renderer = ProviderRenderer(icons={"home": "fa-home"})
 
         with pytest.raises(IconNotFoundError):
             renderer.render("missing")
 
     def test_render_empty_class(self):
-        """Test provider icon rendering with empty additional class."""
         icons = {"search": "fa-search"}
         renderer = ProviderRenderer(icons=icons)
 
@@ -351,7 +317,6 @@ class TestProviderRenderer:
         assert 'class="fa-search"' in result or 'class="fa-search "' in result
 
     def test_render_use_defaults_false(self):
-        """Test rendering without default attributes."""
         icons = {"download": "fa-download"}
         default_attrs = {"class": "icon", "role": "img"}
         renderer = ProviderRenderer(icons=icons, default_attrs=default_attrs)
@@ -364,7 +329,6 @@ class TestProviderRenderer:
         assert 'role="img"' not in result
 
     def test_callable_interface(self):
-        """Test that ProviderRenderer instances are callable."""
         icons = {"bookmark": "fa-bookmark"}
         renderer = ProviderRenderer(icons=icons)
 
@@ -377,13 +341,11 @@ class TestProviderRenderer:
         )
 
     def test_template_format(self):
-        """Test that the template format is correct."""
         renderer = ProviderRenderer()
         expected_template = '<{tag} class="{css_class}" {attrs}></{tag}>'
         assert renderer.template == expected_template
 
     def test_render_complex_icon_name(self):
-        """Test rendering with complex icon name (multiple parts)."""
         icons = {"arrow-left": "fas fa-arrow-left"}
         renderer = ProviderRenderer(icons=icons)
 
@@ -392,7 +354,6 @@ class TestProviderRenderer:
         assert 'class="fas fa-arrow-left"' in result
 
     def test_render_no_additional_attributes(self):
-        """Test rendering with no additional attributes."""
         icons = {"info": "fa-info"}
         renderer = ProviderRenderer(icons=icons)
 
@@ -403,7 +364,6 @@ class TestProviderRenderer:
         )
 
     def test_render_with_boolean_attributes(self):
-        """Test rendering with boolean-style attributes."""
         icons = {"check": "fa-check"}
         renderer = ProviderRenderer(icons=icons)
 
@@ -414,7 +374,6 @@ class TestProviderRenderer:
         assert "disabled" not in result or 'disabled=""' in result
 
     def test_render_strips_whitespace(self):
-        """Test that rendered output is properly stripped."""
         icons = {"star": "fa-star"}
         renderer = ProviderRenderer(icons=icons)
 
@@ -424,7 +383,6 @@ class TestProviderRenderer:
         assert str(result) == str(result).strip()
 
     def test_render_class_handling_edge_cases(self):
-        """Test class handling with various edge cases."""
         icons = {"test": "fa-test"}
         renderer = ProviderRenderer(icons=icons)
 
@@ -442,10 +400,7 @@ class TestProviderRenderer:
 
 
 class TestSpritesRenderer:
-    """Test cases for the SpritesRenderer class."""
-
     def test_init_requires_sprite_url(self):
-        """Test SpritesRenderer requires sprite_url parameter."""
         with pytest.raises(ValueError) as exc_info:
             SpritesRenderer()
 
@@ -454,7 +409,6 @@ class TestSpritesRenderer:
         )
 
     def test_init_with_none_sprite_url(self):
-        """Test SpritesRenderer raises error with None sprite_url."""
         with pytest.raises(ValueError) as exc_info:
             SpritesRenderer(sprite_url=None)
 
@@ -463,12 +417,10 @@ class TestSpritesRenderer:
         )
 
     def test_init_with_sprite_url(self):
-        """Test SpritesRenderer initialization with sprite_url."""
         renderer = SpritesRenderer(sprite_url="/static/icons.svg")
         assert renderer.sprite_url == "/static/icons.svg"
 
     def test_init_with_icons_and_attrs(self):
-        """Test SpritesRenderer initialization with all parameters."""
         icons = {"logo": "brand-logo", "menu": "hamburger"}
         default_attrs = {"class": "sprite-icon", "width": "24", "height": "24"}
         renderer = SpritesRenderer(
@@ -480,7 +432,6 @@ class TestSpritesRenderer:
         assert renderer.default_attrs == default_attrs
 
     def test_render_basic(self):
-        """Test basic sprite rendering."""
         icons = {"home": "home-icon"}
         renderer = SpritesRenderer(sprite_url="/static/icons.svg", icons=icons)
 
@@ -492,7 +443,6 @@ class TestSpritesRenderer:
         assert "</svg>" in result
 
     def test_render_with_attributes(self):
-        """Test sprite rendering with additional attributes."""
         icons = {"star": "star-filled"}
         renderer = SpritesRenderer(sprite_url="/icons.svg", icons=icons)
 
@@ -504,7 +454,6 @@ class TestSpritesRenderer:
         assert '<use href="/icons.svg#star-filled">' in result
 
     def test_render_with_default_attrs(self):
-        """Test sprite rendering with default attributes."""
         icons = {"user": "user-profile"}
         default_attrs = {"class": "icon", "width": "24", "height": "24"}
         renderer = SpritesRenderer(
@@ -519,7 +468,6 @@ class TestSpritesRenderer:
         assert '<use href="/sprites.svg#user-profile">' in result
 
     def test_render_merge_attributes(self):
-        """Test sprite rendering merging default and custom attributes."""
         icons = {"settings": "settings"}
         default_attrs = {"class": "sprite", "width": "16"}
         renderer = SpritesRenderer(
@@ -534,14 +482,12 @@ class TestSpritesRenderer:
         assert 'height="32"' in result
 
     def test_render_missing_icon(self):
-        """Test rendering raises error for missing icon."""
         renderer = SpritesRenderer(sprite_url="/icons.svg", icons={"home": "home-icon"})
 
         with pytest.raises(IconNotFoundError):
             renderer.render("missing")
 
     def test_render_use_defaults_false(self):
-        """Test rendering without default attributes."""
         icons = {"download": "download-arrow"}
         default_attrs = {"class": "sprite", "width": "20"}
         renderer = SpritesRenderer(
@@ -555,7 +501,6 @@ class TestSpritesRenderer:
         assert 'width="20"' not in result
 
     def test_callable_interface(self):
-        """Test that SpritesRenderer instances are callable."""
         icons = {"bookmark": "bookmark-outline"}
         renderer = SpritesRenderer(sprite_url="/icons.svg", icons=icons)
 
@@ -567,7 +512,6 @@ class TestSpritesRenderer:
         assert '<use href="/icons.svg#bookmark-outline">' in result
 
     def test_template_format(self):
-        """Test that the template format is correct."""
         renderer = SpritesRenderer(sprite_url="/test.svg")
         expected_lines = [
             "<svg {attrs}>",
@@ -580,7 +524,6 @@ class TestSpritesRenderer:
             assert line.strip() in renderer.template
 
     def test_render_complex_sprite_url(self):
-        """Test rendering with complex sprite URL."""
         icons = {"arrow": "arrow-right"}
         sprite_url = "https://cdn.example.com/assets/sprites.svg?v=1.2.3"
         renderer = SpritesRenderer(sprite_url=sprite_url, icons=icons)
@@ -590,7 +533,6 @@ class TestSpritesRenderer:
         assert f'<use href="{sprite_url}#arrow-right">' in result
 
     def test_render_relative_sprite_url(self):
-        """Test rendering with relative sprite URL."""
         icons = {"close": "x-mark"}
         renderer = SpritesRenderer(sprite_url="../assets/icons.svg", icons=icons)
 
@@ -599,7 +541,6 @@ class TestSpritesRenderer:
         assert '<use href="../assets/icons.svg#x-mark">' in result
 
     def test_render_absolute_sprite_url(self):
-        """Test rendering with absolute sprite URL."""
         icons = {"search": "magnifying-glass"}
         renderer = SpritesRenderer(sprite_url="/static/sprites/icons.svg", icons=icons)
 
@@ -608,7 +549,6 @@ class TestSpritesRenderer:
         assert '<use href="/static/sprites/icons.svg#magnifying-glass">' in result
 
     def test_render_no_additional_attributes(self):
-        """Test rendering with no additional attributes."""
         icons = {"info": "info-circle"}
         renderer = SpritesRenderer(sprite_url="/icons.svg", icons=icons)
 
@@ -619,7 +559,6 @@ class TestSpritesRenderer:
         assert '<use href="/icons.svg#info-circle">' in result
 
     def test_render_strips_whitespace(self):
-        """Test that rendered output is properly stripped."""
         icons = {"star": "star-filled"}
         renderer = SpritesRenderer(sprite_url="/icons.svg", icons=icons)
 
@@ -629,7 +568,6 @@ class TestSpritesRenderer:
         assert str(result) == str(result).strip()
 
     def test_render_multiline_output(self):
-        """Test that rendered output handles multiline template correctly."""
         icons = {"heart": "heart-solid"}
         renderer = SpritesRenderer(sprite_url="/sprites.svg", icons=icons)
 
@@ -641,7 +579,6 @@ class TestSpritesRenderer:
         assert "</svg>" in result
 
     def test_render_with_fragment_identifier(self):
-        """Test rendering with sprite URL that already has fragment."""
         icons = {"warning": "warning-triangle"}
         # Note: This might be an edge case - sprite_url with existing fragment
         renderer = SpritesRenderer(sprite_url="/icons.svg#base", icons=icons)
@@ -652,7 +589,6 @@ class TestSpritesRenderer:
         assert "/icons.svg#base#warning-triangle" in result
 
     def test_render_escaped_characters_in_sprite_url(self):
-        """Test rendering with special characters in sprite URL."""
         icons = {"test": "test-icon"}
         sprite_url = "/assets/icons with spaces.svg"
         renderer = SpritesRenderer(sprite_url=sprite_url, icons=icons)

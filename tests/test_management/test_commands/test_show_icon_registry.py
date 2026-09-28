@@ -7,10 +7,7 @@ from django.core.management import call_command
 
 
 class TestShowIconRegistryCommand:
-    """Test cases for the show_icon_registry management command."""
-
     def test_command_basic_table_output(self, settings):
-        """Test basic table output format."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
@@ -31,7 +28,6 @@ class TestShowIconRegistryCommand:
         assert "star-icon" in output
 
     def test_command_json_output(self, settings):
-        """Test JSON output format."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
@@ -52,7 +48,6 @@ class TestShowIconRegistryCommand:
         assert data["registry"]["home"][0]["used"] is True
 
     def test_command_detects_collisions(self, settings):
-        """Test detection of icon name collisions."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
@@ -74,7 +69,6 @@ class TestShowIconRegistryCommand:
         assert "fontawesome" in output
 
     def test_command_show_collisions_only(self, settings):
-        """Test --show-collisions-only flag."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
@@ -94,7 +88,6 @@ class TestShowIconRegistryCommand:
         assert "home" not in output
 
     def test_command_show_collisions_only_json(self, settings):
-        """Test --show-collisions-only with JSON format."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
@@ -124,7 +117,6 @@ class TestShowIconRegistryCommand:
         assert data["collisions"]["star"][1]["used"] is False
 
     def test_command_no_collisions(self, settings):
-        """Test output when there are no collisions."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
@@ -139,7 +131,6 @@ class TestShowIconRegistryCommand:
         assert "Icons with collisions: 0" in output
 
     def test_command_empty_registry(self, settings):
-        """Test command with empty icon registry."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
@@ -155,7 +146,6 @@ class TestShowIconRegistryCommand:
         assert "Icons with collisions: 0" in output
 
     def test_command_no_easy_icons_setting(self, settings):
-        """Test command when EASY_ICONS setting is not configured."""
         # Remove EASY_ICONS setting if it exists
         if hasattr(settings, "EASY_ICONS"):
             delattr(settings, "EASY_ICONS")
@@ -168,7 +158,6 @@ class TestShowIconRegistryCommand:
         assert "Total unique icons: 0" in output
 
     def test_command_skips_uppercase_keys(self, settings):
-        """Test that uppercase keys are skipped."""
         settings.EASY_ICONS = {
             "DEFAULT": "default",  # This should be skipped
             "default": {
@@ -185,7 +174,6 @@ class TestShowIconRegistryCommand:
         assert "home" in output
 
     def test_command_skips_non_dict_configs(self, settings):
-        """Test that non-dict renderer configs are skipped."""
         settings.EASY_ICONS = {
             "invalid": "not-a-dict",  # This should be skipped
             "default": {
@@ -201,7 +189,6 @@ class TestShowIconRegistryCommand:
         assert "Total unique icons: 1" in output
 
     def test_command_handles_missing_icons_key(self, settings):
-        """Test that renderer configs without 'icons' key are handled."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
@@ -216,7 +203,6 @@ class TestShowIconRegistryCommand:
         assert "Total unique icons: 0" in output
 
     def test_command_handles_non_dict_icons(self, settings):
-        """Test that non-dict icons values are handled."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
@@ -231,7 +217,6 @@ class TestShowIconRegistryCommand:
         assert "Total unique icons: 0" in output
 
     def test_command_truncates_long_icon_values(self, settings):
-        """Test that long icon values are truncated in table output."""
         long_value = "a" * 50
         settings.EASY_ICONS = {
             "default": {
@@ -250,7 +235,6 @@ class TestShowIconRegistryCommand:
         assert long_value not in output
 
     def test_command_collision_markers(self, settings):
-        """Test that collision markers (USED/SHADOWED) appear correctly."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
@@ -270,7 +254,6 @@ class TestShowIconRegistryCommand:
         assert "SHADOWED" in output
 
     def test_command_multiple_collisions(self, settings):
-        """Test handling of multiple icon collisions."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
@@ -295,7 +278,6 @@ class TestShowIconRegistryCommand:
         assert "home" in output
 
     def test_command_json_collision_structure(self, settings):
-        """Test JSON output structure for collisions."""
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
