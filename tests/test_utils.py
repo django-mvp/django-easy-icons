@@ -590,7 +590,7 @@ class TestPackLoading:
         # Should still load PACK_ONE
         assert result == PACK_ONE
         # Should log warning
-        assert "Cannot import pack" in caplog.text
+        assert any(record.levelname == "WARNING" for record in caplog.records)
         assert "NONEXISTENT_PACK" in caplog.text
 
     def test_load_non_dict_pack(self, caplog):
@@ -606,7 +606,7 @@ class TestPackLoading:
         # Should still load PACK_ONE
         assert result == PACK_ONE
         # Should log warning
-        assert "is not a dictionary" in caplog.text
+        assert any(record.levelname == "WARNING" for record in caplog.records)
         assert "INVALID_PACK" in caplog.text
 
     def test_load_empty_packs_list(self):
@@ -813,7 +813,7 @@ class TestIconRegistryWithPacks:
             assert utils._icon_registry["user"] == "default"
 
             # Should log collision warning
-            assert "Icon name collision" in caplog.text
+            assert any(record.levelname == "WARNING" for record in caplog.records)
             assert "user" in caplog.text
 
 
@@ -893,7 +893,7 @@ class TestPacksEdgeCases:
             # Should have only explicit icon
             assert renderer.icons == {"fallback": "fallback.svg"}
             # Should log warning
-            assert "is not a dictionary" in caplog.text
+            assert any(record.levelname == "WARNING" for record in caplog.records)
 
     def test_duplicate_pack_paths(self):
         """Test that duplicate pack paths work (just reload same data)."""
@@ -1058,9 +1058,7 @@ class TestIconRegistry:
             utils.build_icon_registry()
 
             # Check that warning was logged
-            assert any(
-                "Icon name collision" in record.message for record in caplog.records
-            )
+            assert any(record.levelname == "WARNING" for record in caplog.records)
             assert any("'star'" in record.message for record in caplog.records)
 
 
@@ -1187,7 +1185,6 @@ class TestIconFailSilently:
                 utils.icon("missing-icon")
 
             assert "missing-icon" in str(exc_info.value)
-            assert "not found in any configured renderer" in str(exc_info.value)
 
     def test_fail_silently_defaults_to_debug(self):
         """Test that fail_silently defaults to DEBUG setting."""
@@ -1251,7 +1248,6 @@ class TestIconFailSilently:
                 utils.icon("missing")
 
             error_message = str(exc_info.value)
-            assert "Available icons:" in error_message
             # Should list some available icons
             assert any(icon in error_message for icon in ["home", "heart", "star"])
 

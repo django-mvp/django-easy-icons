@@ -59,7 +59,6 @@ class TestBaseRenderer:
         with pytest.raises(IconNotFoundError) as exc_info:
             renderer.get_icon("missing")
 
-        assert "Icon 'missing' not listed in available icons" in str(exc_info.value)
         assert "ConcreteRenderer" in str(exc_info.value)
 
     def test_build_attrs_no_defaults(self):

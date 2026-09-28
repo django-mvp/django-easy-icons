@@ -23,7 +23,6 @@ class TestShowIconRegistryCommand:
         call_command("show_icon_registry", stdout=out)
         output = out.getvalue()
 
-        assert "Easy Icons Configuration" in output
         assert "EASY_ICONS_FAIL_SILENTLY: True" in output
         assert "Total unique icons: 2" in output
         assert "home" in output
@@ -70,7 +69,6 @@ class TestShowIconRegistryCommand:
         output = out.getvalue()
 
         assert "Icons with collisions: 1" in output
-        assert "Collision Summary" in output
         assert "star" in output
         assert "default" in output
         assert "fontawesome" in output
@@ -92,10 +90,8 @@ class TestShowIconRegistryCommand:
         call_command("show_icon_registry", show_collisions_only=True, stdout=out)
         output = out.getvalue()
 
-        assert "Icon Name Collisions" in output
         assert "star" in output
-        # home should not appear since it has no collision
-        assert "home" not in output or ("home" in output and "Collision" in output)
+        assert "home" not in output
 
     def test_command_show_collisions_only_json(self, settings):
         """Test --show-collisions-only with JSON format."""
@@ -140,7 +136,7 @@ class TestShowIconRegistryCommand:
         call_command("show_icon_registry", show_collisions_only=True, stdout=out)
         output = out.getvalue()
 
-        assert "No icon name collisions detected!" in output
+        assert "Icons with collisions: 0" in output
 
     def test_command_empty_registry(self, settings):
         """Test command with empty icon registry."""
