@@ -137,7 +137,6 @@ class TestSvgRenderer:
 
         result = renderer._inject_svg_attrs(svg_content)
 
-        # Should return original content unchanged
         assert result == svg_content
 
     @patch("easy_icons.renderers.render_to_string")
@@ -252,7 +251,6 @@ class TestProviderRenderer:
 
         result = renderer.render("heart", **{"class": "large"})
 
-        # Should merge the class attributes properly
         assert 'class="fa-heart large"' in result or (
             'class="fa-heart"' in result and 'class="large"' in result
         )
@@ -298,7 +296,6 @@ class TestProviderRenderer:
         result = renderer.render("close", title="Close Dialog")
 
         assert 'class="icon"' in result
-        # Since attributes are now overridden, we should have "Close Dialog"
         assert 'title="Close Dialog"' in result
 
     def test_render_missing_icon(self):
@@ -324,7 +321,6 @@ class TestProviderRenderer:
         test_attrs = {"class": "custom"}
         result = renderer.render("download", use_defaults=False, **test_attrs)
 
-        # When use_defaults=False, should still have the icon class and custom class
         assert "fa-download" in result and "custom" in result
         assert 'role="img"' not in result
 
@@ -335,7 +331,6 @@ class TestProviderRenderer:
         result = renderer("bookmark", **{"class": "active"})
 
         assert isinstance(result, SafeString)
-        # Should merge class attributes or have separate class attributes
         assert 'class="fa-bookmark active"' in result or (
             'class="fa-bookmark"' in result and 'class="active"' in result
         )
@@ -379,19 +374,16 @@ class TestProviderRenderer:
 
         result = renderer.render("star")
 
-        # Should not start or end with whitespace
         assert str(result) == str(result).strip()
 
     def test_render_class_handling_edge_cases(self):
         icons = {"test": "fa-test"}
         renderer = ProviderRenderer(icons=icons)
 
-        # Test with None class
         test_attrs1 = {"class": None}
         result1 = renderer.render("test", **test_attrs1)
         assert "fa-test" in result1
 
-        # Test with multiple spaces in class
         test_attrs2 = {"class": "  extra   spaces  "}
         result2 = renderer.render("test", **test_attrs2)
         assert "fa-test" in result2
@@ -519,7 +511,6 @@ class TestSpritesRenderer:
             "</svg>",
         ]
 
-        # Check that template contains expected structure
         for line in expected_lines:
             assert line.strip() in renderer.template
 
@@ -554,7 +545,6 @@ class TestSpritesRenderer:
 
         result = renderer.render("info")
 
-        # Should have basic structure without extra attributes
         assert "<svg >" in result or "<svg>" in result
         assert '<use href="/icons.svg#info-circle">' in result
 
@@ -564,7 +554,6 @@ class TestSpritesRenderer:
 
         result = renderer.render("star")
 
-        # Should not start or end with whitespace
         assert str(result) == str(result).strip()
 
     def test_render_multiline_output(self):
@@ -573,19 +562,16 @@ class TestSpritesRenderer:
 
         result = renderer.render("heart")
 
-        # Should contain all parts of the template
         assert "<svg" in result
         assert '<use href="/sprites.svg#heart-solid"' in result
         assert "</svg>" in result
 
     def test_render_with_fragment_identifier(self):
         icons = {"warning": "warning-triangle"}
-        # Note: This might be an edge case - sprite_url with existing fragment
         renderer = SpritesRenderer(sprite_url="/icons.svg#base", icons=icons)
 
         result = renderer.render("warning")
 
-        # The fragment should be appended (though this might not be intended behavior)
         assert "/icons.svg#base#warning-triangle" in result
 
     def test_render_escaped_characters_in_sprite_url(self):

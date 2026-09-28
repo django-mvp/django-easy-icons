@@ -20,7 +20,6 @@ PACK_WITH_ALIASES = {
     "home": "pack-home",
 }
 
-# Test pack data structures
 PACK_ONE = {
     "home": "home-v1.svg",
     "user": "user-v1.svg",
@@ -97,7 +96,6 @@ class TestGetRenderer:
             assert renderer1 is renderer2  # Same instance
 
     def test_get_renderer_no_easy_icons_setting(self):
-        # Test with completely missing EASY_ICONS setting (empty dict behavior)
         with override_settings(EASY_ICONS={}):
             with pytest.raises(ImproperlyConfigured) as exc_info:
                 utils.get_renderer()
@@ -231,13 +229,10 @@ class TestClearCache:
         }
 
         with override_settings(EASY_ICONS=config):
-            # Get renderer to populate cache
             renderer1 = utils.get_renderer()
 
-            # Clear cache
             utils.clear_cache()
 
-            # Get renderer again - should be new instance
             renderer2 = utils.get_renderer()
 
             assert renderer1 is not renderer2
@@ -298,7 +293,6 @@ class TestIcon:
         with override_settings(EASY_ICONS=config):
             result = utils.icon("star", **{"class": "large", "data-role": "button"})
 
-            # May have separate class attributes
             assert "fa-star" in result and "large" in result
             assert 'data-role="button"' in result
 
@@ -315,7 +309,6 @@ class TestIcon:
             test_attrs = {"class": "custom"}
             result = utils.icon("check", use_defaults=False, **test_attrs)
 
-            # ProviderRenderer always includes the icon class along with custom class
             assert "fa-check" in result and "custom" in result
             assert 'class="icon' not in result
 
@@ -341,7 +334,6 @@ class TestIcon:
         }
 
         with override_settings(EASY_ICONS=config):
-            # Multiple calls should use same renderer instance
             result1 = utils.icon("home")
             result2 = utils.icon("user")
 
@@ -492,12 +484,9 @@ class TestPackLoading:
             "test_renderer",
         )
 
-        # PACK_TWO should override 'user' from PACK_ONE
         assert result["user"] == "user-v2.svg"
-        # Original values should remain
         assert result["home"] == "home-v1.svg"
         assert result["star"] == "star-v1.svg"
-        # New values from PACK_TWO
         assert result["heart"] == "heart-v2.svg"
 
     def test_load_three_packs_sequential_override(self):
@@ -510,13 +499,9 @@ class TestPackLoading:
             "test_renderer",
         )
 
-        # PACK_THREE overrides 'star'
         assert result["star"] == "star-v3.svg"
-        # PACK_TWO overrides 'user'
         assert result["user"] == "user-v2.svg"
-        # PACK_ONE's 'home' remains
         assert result["home"] == "home-v1.svg"
-        # New icons from each pack
         assert result["heart"] == "heart-v2.svg"
         assert result["admin"] == "admin-v3.svg"
 
@@ -529,9 +514,7 @@ class TestPackLoading:
             "test_renderer",
         )
 
-        # Should still load PACK_ONE
         assert result == PACK_ONE
-        # Should log warning
         assert any(record.levelname == "WARNING" for record in caplog.records)
         assert "NONEXISTENT_PACK" in caplog.text
 
@@ -544,9 +527,7 @@ class TestPackLoading:
             "test_renderer",
         )
 
-        # Should still load PACK_ONE
         assert result == PACK_ONE
-        # Should log warning
         assert any(record.levelname == "WARNING" for record in caplog.records)
         assert "INVALID_PACK" in caplog.text
 
@@ -587,7 +568,6 @@ class TestPacksInRendererConfig:
         ):
             renderer = utils.get_renderer("test")
 
-            # PACK_TWO should override 'user'
             assert renderer.icons["user"] == "user-v2.svg"
             assert renderer.icons["home"] == "home-v1.svg"
             assert renderer.icons["heart"] == "heart-v2.svg"
@@ -610,12 +590,9 @@ class TestPacksInRendererConfig:
         ):
             renderer = utils.get_renderer("test")
 
-            # Explicit 'user' should override both packs
             assert renderer.icons["user"] == "user-explicit.svg"
-            # Pack icons should still be present
             assert renderer.icons["home"] == "home-v1.svg"
             assert renderer.icons["heart"] == "heart-v2.svg"
-            # Explicit custom icon
             assert renderer.icons["custom"] == "custom.svg"
 
     def test_renderer_without_packs_key(self):
@@ -664,7 +641,6 @@ class TestIconRegistryWithPacks:
         ):
             utils.build_icon_registry()
 
-            # All icons from PACK_ONE should be registered
             assert utils._icon_registry["home"] == "svg"
             assert utils._icon_registry["user"] == "svg"
             assert utils._icon_registry["star"] == "svg"
@@ -686,11 +662,9 @@ class TestIconRegistryWithPacks:
         ):
             utils.build_icon_registry()
 
-            # SVG renderer icons
             assert utils._icon_registry["home"] == "svg"
             assert utils._icon_registry["custom"] == "svg"
 
-            # FontAwesome icons (note: 'star' will be collision)
             assert utils._icon_registry["heart"] == "fontawesome"
 
     def test_registry_respects_explicit_icon_precedence(self):
@@ -708,11 +682,9 @@ class TestIconRegistryWithPacks:
         ):
             utils.build_icon_registry()
 
-            # Verify icons are registered
             assert "user" in utils._icon_registry
             assert "home" in utils._icon_registry
 
-            # Get renderer and verify icon values
             renderer = utils.get_renderer("svg")
             assert renderer.icons["user"] == "user-explicit.svg"
             assert renderer.icons["home"] == "home-v1.svg"
@@ -734,10 +706,8 @@ class TestIconRegistryWithPacks:
         ):
             utils.build_icon_registry()
 
-            # 'user' is in both packs - default should win
             assert utils._icon_registry["user"] == "default"
 
-            # Should log collision warning
             assert any(record.levelname == "WARNING" for record in caplog.records)
             assert "user" in caplog.text
 
@@ -761,7 +731,6 @@ class TestIconRenderingWithPacks:
             utils.build_icon_registry()
 
             # Icon exists in pack, but won't render without actual file
-            # Just verify it's found in the renderer
             renderer = utils.get_renderer("default")
             assert "home" in renderer.icons
             assert renderer.icons["home"] == "home-v1.svg"
@@ -779,11 +748,9 @@ class TestIconRenderingWithPacks:
         ):
             renderer = utils.get_renderer("fontawesome")
 
-            # Pack icon
             result = renderer.render("heart")
             assert 'class="fa-heart"' in result
 
-            # Explicit icon
             result = renderer.render("custom")
             assert 'class="fa-custom"' in result
 
@@ -806,9 +773,7 @@ class TestPacksEdgeCases:
         ):
             renderer = utils.get_renderer("test")
 
-            # Should have only explicit icon
             assert renderer.icons == {"fallback": "fallback.svg"}
-            # Should log warning
             assert any(record.levelname == "WARNING" for record in caplog.records)
 
     def test_duplicate_pack_paths(self):
@@ -826,7 +791,6 @@ class TestPacksEdgeCases:
         ):
             renderer = utils.get_renderer("test")
 
-            # Should have PACK_ONE data (loaded twice but identical)
             assert renderer.icons == PACK_ONE
 
     def test_explicit_icons_override_all_packs(self):
@@ -849,12 +813,10 @@ class TestPacksEdgeCases:
         ):
             renderer = utils.get_renderer("test")
 
-            # All three icons should use explicit values
             assert renderer.icons["home"] == "home-final.svg"
             assert renderer.icons["user"] == "user-final.svg"
             assert renderer.icons["star"] == "star-final.svg"
 
-            # Pack-only icons should still exist
             assert renderer.icons["heart"] == "heart-v2.svg"
             assert renderer.icons["admin"] == "admin-v3.svg"
 
@@ -887,11 +849,9 @@ class TestIconRegistry:
         with override_settings(EASY_ICONS=config):
             utils.build_icon_registry()
 
-            # Default icons should be registered
             assert utils._icon_registry.get("home") == "default"
             assert utils._icon_registry.get("star") == "default"  # Default wins
 
-            # FontAwesome unique icon should be registered
             assert utils._icon_registry.get("heart") == "fontawesome"
 
     def test_build_icon_registry_order_matters(self):
@@ -943,7 +903,6 @@ class TestIconRegistry:
         with override_settings(EASY_ICONS=config):
             utils.build_icon_registry()
 
-            # Should still register valid renderers
             assert utils._icon_registry.get("home") == "default"
 
     def test_build_icon_registry_collision_logging(self, caplog):
@@ -963,7 +922,6 @@ class TestIconRegistry:
         with override_settings(EASY_ICONS=config):
             utils.build_icon_registry()
 
-            # Check that warning was logged
             assert any(record.levelname == "WARNING" for record in caplog.records)
             assert any("'star'" in record.message for record in caplog.records)
 
@@ -1033,11 +991,9 @@ class TestIconAutoDetection:
         ):
             utils.build_icon_registry()
 
-            # Auto-detect uses default
             auto_result = utils.icon("star")
             assert "fas fa-star" in auto_result
 
-            # Explicit renderer uses sprites
             explicit_result = utils.icon("star", renderer="sprites")
             assert "star-sprite" in explicit_result
 
@@ -1090,13 +1046,11 @@ class TestIconFailSilently:
             },
         }
 
-        # When DEBUG=True, should fail silently
         with override_settings(EASY_ICONS=config, DEBUG=True):
             utils.build_icon_registry()
             result = utils.icon("missing-icon")
             assert result == ""
 
-        # When DEBUG=False, should raise error
         with override_settings(EASY_ICONS=config, DEBUG=False):
             utils.build_icon_registry()
             with pytest.raises(IconNotFoundError):
@@ -1113,7 +1067,6 @@ class TestIconFailSilently:
 
         with override_settings(EASY_ICONS=config, EASY_ICONS_FAIL_SILENTLY=True):
             utils.build_icon_registry()
-            # Icon doesn't exist in default renderer
             result = utils.icon("missing-icon", renderer="default")
 
             assert result == ""
@@ -1140,7 +1093,6 @@ class TestIconFailSilently:
                 utils.icon("missing")
 
             error_message = str(exc_info.value)
-            # Should list some available icons
             assert any(icon in error_message for icon in ["home", "heart", "star"])
 
 
@@ -1168,7 +1120,6 @@ class TestIconRegistryWithNoDefault:
         ):
             utils.build_icon_registry()
 
-            # Both should auto-detect based on insertion order
             home_result = utils.icon("home")
             assert "fas fa-home" in home_result
 
@@ -1237,9 +1188,7 @@ class TestMultiRendererIntegration:
                 template = Template(template_content)
                 result = template.render(Context())
 
-                # Should contain output from all three renderers
                 assert "<svg" in result  # SVG renderer
-                # FA renderer - class attributes may be separate or merged
                 assert "fa-heart" in result and "like-btn" in result  # FA renderer
                 assert '<use href="/static/icons.svg#brand-logo"' in result  # Sprites
 
@@ -1258,11 +1207,9 @@ class TestMultiRendererIntegration:
         }
 
         with override_settings(EASY_ICONS=config):
-            # Default renderer
             result1 = easy_icon("home")
             assert '<i class="fa-home"' in result1
 
-            # Custom renderer - may have separate class attributes
             result2 = easy_icon("settings", renderer="custom")
             assert "gear-icon" in result2 and 'class="icon"' in result2
 
@@ -1281,7 +1228,6 @@ class TestMultiRendererIntegration:
         }
 
         with override_settings(EASY_ICONS=config):
-            # Multiple calls to same renderer should use cached instance
             result1 = easy_icon("icon1", renderer="provider1")
             result2 = easy_icon("icon2", renderer="provider1")
             result3 = easy_icon("icon3", renderer="provider2")
@@ -1325,13 +1271,11 @@ class TestMultiRendererIntegration:
                     '<svg viewBox="0 0 24 24"><path d="M0 0L10 10"/></svg>'
                 )
 
-                # Test SVG renderer with defaults and overrides
                 home_result = easy_icon("home", renderer="main")
                 assert 'class="svg-icon"' in home_result
                 assert 'height="1em"' in home_result
                 assert 'fill="currentColor"' in home_result
 
-                # Test with overrides - use star unpacking
                 search_result = easy_icon(
                     "search", renderer="main", width="2em", **{"class": "search-icon"}
                 )
@@ -1341,7 +1285,6 @@ class TestMultiRendererIntegration:
                 assert "svg-icon" not in search_result  # Should be overridden
                 assert 'width="2em"' in search_result
 
-                # Test provider renderer - may have separate class attributes
                 fb_result = easy_icon("facebook", renderer="social")
                 assert "fa-facebook" in fb_result and "fab" in fb_result
 
@@ -1355,17 +1298,14 @@ class TestMultiRendererIntegration:
         }
 
         with override_settings(EASY_ICONS=config):
-            # Valid icon should work
             result = easy_icon("valid", renderer="test")
             assert "fa-valid" in result
 
-            # Invalid icon should raise error
             from easy_icons.exceptions import IconNotFoundError
 
             with pytest.raises(IconNotFoundError):
                 easy_icon("invalid", renderer="test")
 
-            # Invalid renderer should raise error
             from django.core.exceptions import ImproperlyConfigured
 
             with pytest.raises(ImproperlyConfigured):
@@ -1427,12 +1367,10 @@ class TestMultiRendererIntegration:
             template = Template(template_content)
             result = template.render(Context(context_data))
 
-            # Verify all icons rendered correctly
             assert "fa-home nav-icon" in result
             assert "fa-user nav-icon primary" in result
             assert "fa-user-shield nav-icon admin-icon" in result
 
-            # Verify structure
             assert "nav-link" in result
             assert "nav-link active" in result
             assert "nav-link admin" in result
@@ -1454,23 +1392,19 @@ class TestMultiRendererIntegration:
         }
 
         with override_settings(EASY_ICONS=config):
-            # Test class override - ProviderRenderer creates duplicate class attributes
             result1 = easy_icon("test", **{"class": "additional custom"})
-            # Check that provided class appears in the css_class and icon class appears
             assert (
                 "fa-test" in result1 and "additional" in result1 and "custom" in result1
             )
             # ProviderRenderer has both classes due to its design (icon class + separate class attribute)
             assert "icon" in result1 and "base" in result1
 
-            # Test attribute override - should override default role
             result2 = easy_icon("test", role="button", **{"data-action": "click"})
             assert 'role="button"' in result2  # Should override default role="img"
             assert 'role="img"' not in result2  # Should be overridden
             assert 'aria-hidden="true"' in result2
             assert 'data-action="click"' in result2
 
-            # Test use_defaults=False
             result3 = easy_icon("test", use_defaults=False, **{"class": "only-this"})
             assert "only-this" in result3 and "fa-test" in result3
             assert 'role="img"' not in result3

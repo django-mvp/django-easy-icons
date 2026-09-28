@@ -60,7 +60,6 @@ class TestIconTemplateTag:
                 "star", defaults=None, **{"class": "large", "data-role": "button"}
             )
 
-            # May have separate class attributes
             assert "fa-star" in result and "large" in result
             assert 'data-role="button"' in result
 
@@ -153,13 +152,10 @@ class TestIconTemplateTag:
             }
         }
 
-        # Test both function call and template usage
         with override_settings(EASY_ICONS=config):
-            # Direct function call
             result1 = icon("heart")
             assert '<i class="fa-heart"' in result1
 
-            # Template usage
             template_content = "{% load easy_icons %}{% icon 'heart' %}"
             template = Template(template_content)
             result2 = template.render(Context())
@@ -271,9 +267,7 @@ class TestIconTemplateTag:
             result = icon("star", defaults=defaults_dict, **{"class": "override-style"})
 
             assert isinstance(result, SafeString)
-            # kwargs should override defaults
             assert 'class="fa-star override-style"' in result
-            # Non-overridden defaults should still be present
             assert 'title="Default Title"' in result
 
     def test_icon_tag_defaults_in_template(self):
@@ -317,9 +311,7 @@ class TestIconTemplateTag:
             )
             result = template.render(context)
 
-            # Template attributes should override defaults
             assert 'class="fa-user extra-class"' in result
-            # Non-overridden defaults should still be present
             assert 'data-id="123"' in result
 
     def test_icon_tag_empty_defaults_dict(self):

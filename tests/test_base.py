@@ -73,10 +73,8 @@ class TestBaseRenderer:
         default_attrs = {"class": "icon", "height": "1em"}
         renderer = ConcreteRenderer(default_attrs=default_attrs)
 
-        # When we pass class, it should override default class
         test_attrs = {"class": "custom", "height": "2em"}
         attrs = renderer.build_attrs(use_defaults=True, **test_attrs)
-        # class should be overridden
         assert 'class="custom"' in attrs
         assert 'height="2em"' in attrs  # Should be overridden
 
@@ -115,10 +113,8 @@ class TestBaseRenderer:
         default_attrs = {"class": "icon"}
         renderer = ConcreteRenderer(default_attrs=default_attrs)
 
-        # Modify the renderer's default_attrs
         renderer.default_attrs["class"] = "modified"
 
-        # Original dict should be unchanged
         assert default_attrs["class"] == "icon"
 
     def test_build_attrs_empty_kwargs(self):
@@ -134,4 +130,3 @@ class TestBaseRenderer:
         test_attrs = {"class": "icon", "data_value": None}
         attrs = renderer.build_attrs(**test_attrs)
         assert 'class="icon"' in attrs
-        # flatatt should handle None values appropriately

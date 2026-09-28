@@ -102,22 +102,18 @@ class TestExceptionHierarchy:
         assert not issubclass(InvalidSvgError, IconNotFoundError)
 
     def test_catch_specific_exceptions(self):
-        # Test IconNotFoundError
         with pytest.raises(IconNotFoundError):
             raise IconNotFoundError("Not found")
 
-        # Test InvalidSvgError
         with pytest.raises(InvalidSvgError):
             raise InvalidSvgError("Invalid")
 
     def test_catch_as_general_exception(self):
-        # IconNotFoundError
         try:
             raise IconNotFoundError("Not found")
         except Exception as e:
             assert isinstance(e, IconNotFoundError)
 
-        # InvalidSvgError
         try:
             raise InvalidSvgError("Invalid")
         except Exception as e:

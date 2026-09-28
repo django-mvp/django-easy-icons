@@ -146,12 +146,10 @@ class TestShowIconRegistryCommand:
         assert "Icons with collisions: 0" in output
 
     def test_command_no_easy_icons_setting(self, settings):
-        # Remove EASY_ICONS setting if it exists
         if hasattr(settings, "EASY_ICONS"):
             delattr(settings, "EASY_ICONS")
 
         out = StringIO()
-        # Should not raise an error
         call_command("show_icon_registry", stdout=out)
         output = out.getvalue()
 
@@ -192,7 +190,6 @@ class TestShowIconRegistryCommand:
         settings.EASY_ICONS = {
             "default": {
                 "class": "easy_icons.renderers.SvgRenderer",
-                # No 'icons' key
             }
         }
 
@@ -229,9 +226,7 @@ class TestShowIconRegistryCommand:
         call_command("show_icon_registry", stdout=out)
         output = out.getvalue()
 
-        # Should contain truncated value with ellipsis
         assert "..." in output
-        # Should not contain the full 50-character value
         assert long_value not in output
 
     def test_command_collision_markers(self, settings):

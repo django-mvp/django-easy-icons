@@ -19,7 +19,6 @@ def clear_cache_between_tests():
 def auto_build_registry(request):
     # This runs after the test function, allowing override_settings to take effect first
     yield
-    # Build registry with current settings
     utils.build_icon_registry()
 
 
@@ -110,7 +109,6 @@ def create_test_settings(**easy_icons_config):
     return override_settings(EASY_ICONS=easy_icons_config)
 
 
-# Test constants
 TEST_SVG_CONTENT = (
     '<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>'
 )
@@ -142,18 +140,14 @@ class TestHelpers:
 
     @staticmethod
     def assert_valid_html_attributes(html):
-        # Check for unescaped quotes within attribute values (basic check)
         import re
 
-        # Find all attributes
         attr_pattern = r'(\w+(?:-\w+)*)=(["\'])([^"\']*?)\2'
         matches = re.findall(attr_pattern, html)
 
         for attr_name, quote_char, attr_value in matches:
-            # Attribute names should not be empty
             assert attr_name.strip(), f"Empty attribute name in: {html}"
 
-            # Attribute values should not contain unescaped quotes of the same type
             if quote_char == '"':
                 assert '"' not in attr_value, (
                     f"Unescaped quote in attribute value: {attr_value}"
