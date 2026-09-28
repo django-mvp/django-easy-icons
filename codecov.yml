@@ -6,13 +6,12 @@ coverage:
   status:
     project:
       default:
-        target: 80%     # aim for at least 80% total coverage
-        threshold: 1%   # allow PRs to drop max 1% vs base branch
-        informational: true
+        target: 90%
+        threshold: 1%
     patch:
       default:
-        target: 80%     # aim for at least 80% coverage on new code
-        informational: true
+        target: 85%
+        threshold: 1%
 
 ignore:
   - "tests/*"           # don’t measure test files themselves
