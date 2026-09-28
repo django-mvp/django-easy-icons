@@ -1,16 +1,8 @@
-"""Management command to display the icon registry and detect collisions.
-
-This command shows all registered icons, which renderer they map to,
-and detects any icon name collisions across renderers.
-
-Usage:
-    python manage.py show_icon_registry
-    python manage.py show_icon_registry --format=table
-    python manage.py show_icon_registry --format=json
-"""
+"""The ``show_icon_registry`` command: list registered icons and name collisions."""
 
 import json
 from collections import defaultdict
+from typing import Any
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -41,11 +33,9 @@ class Command(BaseCommand):
         output_format = options["format"]
         show_collisions_only = options["show_collisions_only"]
 
-        # Get configuration
         config = getattr(settings, "EASY_ICONS", {})
         fail_silently = getattr(settings, "EASY_ICONS_FAIL_SILENTLY", settings.DEBUG)
 
-        # Build complete icon->renderer mapping including all occurrences
         icon_to_renderers = defaultdict(list)
         for renderer_name, renderer_config in config.items():
             if renderer_name.isupper() or not isinstance(renderer_config, dict):
@@ -60,7 +50,6 @@ class Command(BaseCommand):
                     {"renderer": renderer_name, "value": icon_value}
                 )
 
-        # Identify collisions
         collisions = {
             icon: renderers
             for icon, renderers in icon_to_renderers.items()
@@ -77,10 +66,21 @@ class Command(BaseCommand):
             )
 
     def _output_table(
-        self, icon_to_renderers, collisions, fail_silently, show_collisions_only
-    ):
-        """Output registry as a formatted table."""
-        # Settings info
+        self,
+        icon_to_renderers: dict[str, list[dict[str, str]]],
+        collisions: dict[str, list[dict[str, str]]],
+        fail_silently: bool,
+        show_collisions_only: bool,
+    ) -> None:
+        """Write the registry, or only its collisions, as a text table.
+
+        Args:
+            icon_to_renderers: Each icon name mapped to every renderer entry that
+                defines it, in lookup order.
+            collisions: The subset of ``icon_to_renderers`` defined more than once.
+            fail_silently: The effective ``EASY_ICONS_FAIL_SILENTLY`` value.
+            show_collisions_only: Write only the colliding icons.
+        """
         self.stdout.write(self.style.SUCCESS("\n=== Easy Icons Configuration ==="))
         self.stdout.write(f"EASY_ICONS_FAIL_SILENTLY: {fail_silently}")
         self.stdout.write(f"Total unique icons: {len(icon_to_renderers)}")
@@ -104,7 +104,6 @@ class Command(BaseCommand):
                         f"  {style(marker)} {renderer_info['renderer']:15} → {renderer_info['value']}"
                     )
         else:
-            # Full registry
             self.stdout.write(self.style.SUCCESS("=== Icon Registry ==="))
             self.stdout.write(
                 f"{'Icon Name':<25} | {'Renderer':<15} | {'Icon Value':<30} | {'Status'}"
@@ -121,7 +120,6 @@ class Command(BaseCommand):
                         status = "OK"
                         style = self.style.SUCCESS
 
-                    # Truncate long values
                     icon_value = renderer_info["value"]
                     if len(icon_value) > 30:
                         icon_value = icon_value[:27] + "..."
@@ -130,7 +128,6 @@ class Command(BaseCommand):
                         f"{icon_name:<25} | {renderer_info['renderer']:<15} | {icon_value:<30} | {style(status)}"
                     )
 
-            # Summary
             if collisions:
                 self.stdout.write(
                     "\n" + self.style.WARNING("=== Collision Summary ===")
@@ -144,9 +141,22 @@ class Command(BaseCommand):
                     )
 
     def _output_json(
-        self, icon_to_renderers, collisions, fail_silently, show_collisions_only
-    ):
-        """Output registry as JSON."""
+        self,
+        icon_to_renderers: dict[str, list[dict[str, str]]],
+        collisions: dict[str, list[dict[str, str]]],
+        fail_silently: bool,
+        show_collisions_only: bool,
+    ) -> None:
+        """Write the registry, or only its collisions, as JSON.
+
+        Args:
+            icon_to_renderers: Each icon name mapped to every renderer entry that
+                defines it, in lookup order.
+            collisions: The subset of ``icon_to_renderers`` defined more than once.
+            fail_silently: The effective ``EASY_ICONS_FAIL_SILENTLY`` value.
+            show_collisions_only: Write only the colliding icons.
+        """
+        output: dict[str, Any]
         if show_collisions_only:
             output = {
                 "collisions": {

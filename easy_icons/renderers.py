@@ -1,13 +1,4 @@
-"""Concrete renderer implementations for django-easy-icons.
-
-All input validation responsibility is delegated to a single place:
-``BaseRenderer.get_icon``. Renderers themselves assume any name
-they receive has passed that minimal check and focus purely on output
-generation.
-
-The public API for consumers is ``easy_icons.utils.icon``; this module
-only exposes the concrete classes.
-"""
+"""The SVG template, icon font and sprite sheet renderers."""
 
 from typing import Any
 
@@ -19,16 +10,12 @@ from .exceptions import InvalidSvgError
 
 
 class SvgRenderer(BaseRenderer):
-    """Renderer for SVG icons sourced from template files.
+    """Render icons from SVG files loaded as Django templates.
 
-    Parameters
-    ----------
-    svg_dir: str = "icons"
-        Directory (template prefix) where SVG template fragments live.
-    default_attrs: dict | None
-        Default attributes to inject/merge into rendered SVG root element.
-    icons: dict[str,str] | None
-        Name mapping provided via settings.
+    Args:
+        svg_dir: Template directory the SVG files live in.
+        **kwargs: ``icons`` and ``default_attrs``, passed to `BaseRenderer`.
+            The default attributes land on the root ``<svg>`` element.
     """
 
     def __init__(self, *, svg_dir: str = "icons", **kwargs: Any):
@@ -36,30 +23,33 @@ class SvgRenderer(BaseRenderer):
         self.svg_dir = svg_dir
 
     def render(self, name: str, **kwargs: Any) -> SafeString:
+        """Render the icon's SVG template with the attributes on its root element."""
         resolved_name = self.get_icon(name)
         template_name = f"{self.svg_dir}/{resolved_name}"
         svg_str = render_to_string(template_name)
         return self._inject_svg_attrs(svg_str, **kwargs)
 
     def _inject_svg_attrs(self, svg_str: str, **kwargs: Any) -> SafeString:
-        """Inject attributes into the SVG element.
+        """Add attributes to the first ``<svg>`` element of the markup.
 
         Args:
-            svg_str: The SVG content as a string
-            **kwargs: Additional attributes to inject into the SVG tag
+            svg_str: The rendered SVG markup.
+            **kwargs: HTML attributes for the ``<svg>`` element.
 
         Returns:
-            Safe HTML string with attributes injected
+            The markup with the attributes added, marked safe.
+
+        Raises:
+            InvalidSvgError: The markup contains no ``<svg`` tag.
         """
         attrs = self.build_attrs(**kwargs)
 
         if not attrs:
             return self.safe_return(svg_str)
 
-        # Split on '<svg' to isolate the svg tag
         before, sep, after = svg_str.partition("<svg")
 
-        if not sep:  # No '<svg' found
+        if not sep:
             raise InvalidSvgError("No <svg> tag found in SVG content")
 
         result = f"{before}<svg {attrs} {after.strip()}"
@@ -67,7 +57,15 @@ class SvgRenderer(BaseRenderer):
 
 
 class ProviderRenderer(BaseRenderer):
-    """Renderer for provider / font icon classes using full class strings."""
+    """Render icon-font icons as an empty element carrying the icon's classes.
+
+    Args:
+        tag: The HTML element to render, such as ``i`` or ``span``.
+        **kwargs: ``icons`` and ``default_attrs``, passed to `BaseRenderer`.
+
+    Attributes:
+        template: Format string for the rendered element.
+    """
 
     template = '<{tag} class="{css_class}" {attrs}></{tag}>'
 
@@ -76,6 +74,7 @@ class ProviderRenderer(BaseRenderer):
         self.tag = tag
 
     def render(self, name: str, **kwargs: Any) -> SafeString:
+        """Render the element with the icon's classes before any ``class`` passed in."""
         tag = self.tag
         resolved_icon = f"{self.get_icon(name)} {kwargs.pop('class', '')} "
         attrs = self.build_attrs(**kwargs)
@@ -86,14 +85,18 @@ class ProviderRenderer(BaseRenderer):
 
 
 class SpritesRenderer(BaseRenderer):
-    """Renderer for SVG sprite symbols via <use>.
+    """Render symbols from an SVG sprite sheet through ``<use>``.
 
-    Parameters
-    ----------
-    sprite_url: str (required)
-        Base URL/path to the sprite sheet. Required; raises ValueError if missing.
-    default_attrs: dict | None
-        Default attributes for the outer <svg> element.
+    Args:
+        sprite_url: URL of the sprite sheet.
+        **kwargs: ``icons`` and ``default_attrs``, passed to `BaseRenderer`.
+            The default attributes land on the outer ``<svg>`` element.
+
+    Attributes:
+        template: Format string for the rendered ``<svg>`` element.
+
+    Raises:
+        ValueError: ``sprite_url`` is missing or empty.
     """
 
     template = """<svg {attrs}>
@@ -107,6 +110,7 @@ class SpritesRenderer(BaseRenderer):
         self.sprite_url = sprite_url
 
     def render(self, name: str, **kwargs: Any) -> SafeString:
+        """Render an ``<svg>`` that references the icon's symbol in the sprite sheet."""
         resolved_name = self.get_icon(name)
         sprite_url = self.sprite_url
         attrs = self.build_attrs(**kwargs)

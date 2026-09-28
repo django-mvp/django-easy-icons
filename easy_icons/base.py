@@ -1,21 +1,4 @@
-"""Base renderer class and common functionality for django-easy-icons.
-
-This module provides the abstract base class that all icon renderers must inherit from,
-along with common functionality for attribute handling and icon name resolution.
-
-The BaseRenderer class handles:
-- Icon name mapping and resolution
-- HTML attribute building and merging
-- Default attribute management
-- Common interface for all renderers
-
-Example:
-    class MyRenderer(BaseRenderer):
-        def render(self, name: str, **kwargs) -> SafeString:
-            resolved_name = self.get_icon(name)
-            attrs = self.build_attrs(**kwargs)
-            return self.safe_return(f'<my-icon {attrs}>{resolved_name}</my-icon>')
-"""
+"""The base class every icon renderer subclasses."""
 
 from abc import ABC, abstractmethod
 from typing import Any
@@ -29,10 +12,16 @@ from .exceptions import IconNotFoundError
 class BaseRenderer(ABC):
     """Base class for all icon renderers.
 
-    Renderers now declare their configuration explicitly via ``__init__``
-    keyword arguments. The settings loader star-expands user supplied
-    ``config`` dictionaries directly into that initializer. Common shared
-    data (like icon name mappings) is still passed via ``icons``.
+    Subclasses declare their configuration as keyword arguments to ``__init__``.
+    The settings loader star-expands each renderer's ``config`` dictionary into
+    that initializer and passes the icon mapping as ``icons``
+    (docs/adr/0003-settings-star-expansion.md). Keyword arguments meant for a
+    subclass are ignored here.
+
+    Args:
+        icons: Logical icon names mapped to renderer-specific identifiers.
+        default_attrs: HTML attributes applied to every icon, which per-call
+            attributes override.
     """
 
     def __init__(
@@ -42,24 +31,21 @@ class BaseRenderer(ABC):
         default_attrs: dict[str, Any] | None = None,
         **_: Any,
     ):  # pragma: no cover - slim wrapper
-        """Initialize the base renderer.
-
-        Parameters
-        ----------
-        icons: Optional[Dict[str, str]]
-            Mapping of logical icon names to renderer-specific identifiers.
-        default_attrs: Optional[Dict[str, Any]]
-            Default HTML attributes applied (and mergeable) across all renders.
-        **_ : Any
-            Ignored extra keyword arguments (consumed by concrete subclasses).
-        """
         self.icons = icons or {}
-        # Provide a unified place for managing default attributes so concrete
-        # renderers don't need to duplicate ``self.default_attrs = default_attrs or {}``.
         self.default_attrs = (default_attrs or {}).copy()
 
     def get_icon(self, name: str) -> str:
-        """Resolve icon name through renderer-specific icon mappings."""
+        """Return the renderer-specific identifier for a logical icon name.
+
+        Args:
+            name: The logical icon name.
+
+        Returns:
+            The identifier this renderer's icon mapping holds for ``name``.
+
+        Raises:
+            IconNotFoundError: The mapping has no entry for ``name``.
+        """
         try:
             return self.icons[name]
         except KeyError:
@@ -71,16 +57,15 @@ class BaseRenderer(ABC):
         """Build HTML attributes string from configuration and provided kwargs.
 
         Args:
-            use_defaults: Whether to merge with default attributes
-            **kwargs: Additional attributes to include
+            use_defaults: Merge the renderer's default attributes under ``kwargs``.
+            **kwargs: Attributes for this icon.
 
         Returns:
-            HTML attributes string
+            The attributes as an HTML attribute string.
         """
         if not use_defaults:
             return flatatt(kwargs)
 
-        # creates a copy of default_attrs then override with kwargs
         attrs = self.default_attrs.copy()
         attrs.update(kwargs)
 
@@ -91,26 +76,32 @@ class BaseRenderer(ABC):
         """Render an icon with the given name and attributes.
 
         Args:
-            name: The icon name to render
-            **kwargs: Additional attributes for the icon
+            name: The logical icon name.
+            **kwargs: HTML attributes for the icon.
 
         Returns:
-            Safe HTML string containing the rendered icon
+            The icon's markup, marked safe.
         """
-        pass
 
     def __call__(self, name: str, **kwargs: Any) -> SafeString:
-        """Make renderer instances callable.
+        """Render an icon, so a renderer instance can be called directly.
 
         Args:
-            name: The icon name to render
-            **kwargs: Additional attributes for the icon
+            name: The logical icon name.
+            **kwargs: HTML attributes for the icon.
 
         Returns:
-            Safe HTML string containing the rendered icon
+            The icon's markup, marked safe.
         """
         return self.render(name, **kwargs)
 
     def safe_return(self, content: str) -> SafeString:
-        """Return HTML content marked as safe (internal helper)."""
+        """Mark rendered markup as safe for templates.
+
+        Args:
+            content: Markup built from escaped attributes.
+
+        Returns:
+            ``content`` marked safe.
+        """
         return mark_safe(content)  # noqa: S308

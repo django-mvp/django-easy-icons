@@ -4,66 +4,20 @@ This directory contains a comprehensive test suite for the django-easy-icons pac
 
 ## Test Files Overview
 
-### Core Component Tests
+Each test module mirrors the source module it exercises, with one `Test<Subject>` class per unit.
+The rules are in [`docs/contributing/standards/testing.md`](../docs/contributing/standards/testing.md).
 
-1. **`test_config.py`** - Configuration Management Tests
-   - Tests the `EasyIconsConfig` class and configuration loading
-   - Tests configuration validation and error handling
-   - Tests configuration caching and cache invalidation
-   - Tests Django settings integration and signal handling
-   - Covers configuration edge cases and validation errors
+| Test module | Source module |
+|---|---|
+| `test_base.py` | `easy_icons/base.py` |
+| `test_exceptions.py` | `easy_icons/exceptions.py` |
+| `test_renderers.py` | `easy_icons/renderers.py` |
+| `test_templatetags.py` | `easy_icons/templatetags/easy_icons.py` |
+| `test_utils.py` | `easy_icons/utils.py` |
+| `test_management/test_commands/test_show_icon_registry.py` | `easy_icons/management/commands/show_icon_registry.py` |
 
-2. **`test_base.py`** - Base Renderer Tests
-   - Tests the abstract `BaseRenderer` class functionality
-   - Tests icon name resolution and validation
-   - Tests attribute building and class merging
-   - Tests HTML attribute normalization and safety
-   - Tests the renderer callable interface
-
-3. **`test_renderers.py`** - Concrete Renderer Tests
-   - **SvgRenderer Tests**: Template-based SVG icon rendering, attribute injection
-   - **ProviderRenderer Tests**: Font icon class rendering (FontAwesome, etc.)
-   - **SpritesRenderer Tests**: SVG sprite symbol rendering with `<use>` elements
-   - Tests renderer initialization, configuration, and rendering output
-
-4. **`test_utils.py`** - Main Icon Function Tests
-   - Tests the main `icon()` function that users interact with
-   - Tests renderer selection and parameter passing
-   - Tests error propagation and edge cases
-   - Tests integration with the configuration system
-
-5. **`test_templatetags.py`** - Django Template Tag Tests
-   - Tests the `{% icon %}` template tag functionality
-   - Tests parameter passing and attribute handling
-   - Tests integration with Django template system
-   - Tests template context and variable handling
-
-6. **`test_exceptions.py`** - Exception Handling Tests
-   - Tests the `IconNotFoundError` exception class
-   - Tests exception raising and catching patterns
-   - Tests error messages and context information
-
-7. **`test_apps.py`** - Django App Configuration Tests
-   - Tests the `EasyIconsConfig` Django app configuration
-   - Tests app registration and Django integration
-   - Tests app metadata and configuration
-
-8. **`test_integration.py`** - Full Integration Tests
-   - Tests complete workflows using multiple components
-   - Tests real-world usage scenarios
-   - Tests performance with multiple icons and renderers
-   - Tests complex attribute merging and configuration scenarios
-
-### Test Utilities
-
-- **`conftest.py`** - Pytest configuration and shared fixtures
-  - Provides test configuration fixtures for different renderer types
-  - Helper functions for HTML validation and assertion
-  - Automatic cache clearing between tests
-
-- **`run_tests.py`** - Standalone test runner
-  - Can run tests without pytest if needed
-  - Sets up Django environment for testing
+`conftest.py` holds the shared fixtures: renderer configurations and cache clearing between
+tests.
 
 ## Running Tests
 
@@ -82,13 +36,13 @@ pytest -v
 pytest --cov=easy_icons
 
 # Run specific test file
-pytest tests/test_config.py
+pytest tests/test_utils.py
 
 # Run specific test class
-pytest tests/test_config.py::TestEasyIconsConfig
+pytest tests/test_utils.py::TestGetRenderer
 
 # Run specific test method
-pytest tests/test_config.py::TestEasyIconsConfig::test_get_config_caching
+pytest tests/test_utils.py::TestGetRenderer::test_get_renderer_caching
 ```
 
 ### Test Configuration
