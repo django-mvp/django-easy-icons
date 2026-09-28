@@ -67,3 +67,18 @@ html_icon = icon("home", height="1em", width="auto")
 renderers
 usage-examples
 ```
+
+```{toctree}
+:caption: API reference
+:maxdepth: 1
+
+api/easy_icons/easy_icons
+```
+
+```{toctree}
+:caption: Contributing
+:maxdepth: 1
+
+contributing/standards/testing
+contributing/standards/code-documentation
+```
