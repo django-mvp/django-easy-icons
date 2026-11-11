@@ -17,7 +17,9 @@ YAGNI over speculation. This package is deliberately small (~600 LOC of source) 
 ### Article III — Anti-Abstraction
 No wrapper layers, base classes, or "future-proofing" indirection without a present, concrete
 second use. Prefer duplication over the wrong abstraction. The one sanctioned abstraction is
-the renderer strategy (ADR 0001).
+the renderer strategy (ADR 0001). A second use also counts as present when it is in another
+approved specification built in the same batch, such as several features specified together
+from one prototype.
 
 ### Article IV — Integration-First
 Contracts and integration points are designed and tested before internals are polished.
@@ -144,4 +146,4 @@ instantiation of Article V for this package).
 
 ---
 
-**Version**: 2.1.0 | **Ratified**: 2026-07-10 | **Last Amended**: 2026-10-12
+**Version**: 2.1.1 | **Ratified**: 2026-07-10 | **Last Amended**: 2026-11-11
