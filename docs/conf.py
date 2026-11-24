@@ -19,5 +19,3 @@ autodoc2_docstring_parser_regexes = [(r".*", "google_docstrings")]
 html_logo = None
 html_favicon = None
 html_short_title = "Easy Icons"
-html_theme_options["path_to_docs"] = "docs"
-html_theme_options["home_page_in_toc"] = False

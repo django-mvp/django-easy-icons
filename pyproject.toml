@@ -17,7 +17,7 @@ include = ["easy_icons", "README.md", "LICENSE"]
 dev = ["mvp-shared[dev,test]; python_version >= '3.12'"]
 # Same marker as the bundle above: docs tooling needs 3.12 but never ships to
 # consumers, so it must not drag the package's own 3.11 floor up with it.
-docs = ["fairdm-docs[sphinx_book_theme]; python_version >= '3.12'"]
+docs = ["fairdm-docs; python_version >= '3.12'"]
 
 [tool.uv.sources]
 mvp-shared = { git = "https://github.com/django-mvp/shared.git", tag = "v0.6.0" }
